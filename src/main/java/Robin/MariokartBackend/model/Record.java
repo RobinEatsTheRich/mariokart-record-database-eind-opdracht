@@ -89,4 +89,12 @@ public class Record {
 
     public Record() {
     }
+
+    public boolean isIs200CC() {
+        return is200CC;
+    }
+
+    public void setIs200CC(boolean is200CC) {
+        this.is200CC = is200CC;
+    }
 }

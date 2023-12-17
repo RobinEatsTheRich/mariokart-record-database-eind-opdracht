@@ -11,11 +11,11 @@ public class KartPartInputDto {
     @NotNull
     @Size(min=1, max=128)
     private String name;
-    private byte[] img;
+    private  String imgLink;
 
-    public KartPartInputDto(Long id, String name, byte[] img) {
+    public KartPartInputDto(Long id, String name, String imgLink) {
         this.id = id;
         this.name = name;
-        this.img = img;
+        this.imgLink = imgLink;
     }
 }

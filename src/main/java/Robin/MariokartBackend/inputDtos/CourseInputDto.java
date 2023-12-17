@@ -10,10 +10,10 @@ public class CourseInputDto {
     @NotNull
     @Size(min=1, max=128)
     private String name;
-    private byte[] img;
+    private String imgLink;
 
-    public CourseInputDto(String name, byte[] img) {
+    public CourseInputDto(String name, String imgLink) {
         this.name = name;
-        this.img = img;
+        this.imgLink = imgLink;
     }
 }

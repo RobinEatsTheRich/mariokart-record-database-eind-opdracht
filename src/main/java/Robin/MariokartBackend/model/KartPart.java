@@ -14,14 +14,15 @@ public class KartPart {
     @GeneratedValue
     private Long id;
     private String name;
-    private byte[] img;
+    @Column(name = "img_link")
+    private String imgLink;
     @Column(name = "part_type")
     private PartType partType;
 
-    public KartPart(Long id, String name, byte[] img, PartType partType) {
+    public KartPart(Long id, String name, String imgLink, PartType partType) {
         this.id = id;
         this.name = name;
-        this.img = img;
+        this.imgLink = imgLink;
         this.partType = partType;
     }
 

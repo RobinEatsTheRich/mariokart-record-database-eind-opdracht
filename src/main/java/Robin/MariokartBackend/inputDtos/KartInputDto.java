@@ -7,6 +7,9 @@ import lombok.Getter;
 @Getter
 public class KartInputDto {
     private Long id;
+    private KartPart body;
+    private KartPart wheels;
+    private KartPart glider;
 
     public KartInputDto() {
     }

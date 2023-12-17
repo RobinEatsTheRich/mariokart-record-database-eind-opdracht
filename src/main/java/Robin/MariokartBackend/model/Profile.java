@@ -13,17 +13,15 @@ public class Profile {
     @Id
     @GeneratedValue
     private Long id;
-    @OneToOne
+    @OneToOne(mappedBy = "")
     private User user;
     @OneToMany
     private List<Record> records;
     @Column(name = "nintendo_code")
     private String nintendoCode;
     @OneToOne
-    @Column(name = "fav_kart")
     private Kart favKart;
     @OneToOne
-    @Column(name = "fav_character")
     private Character favCharacter;
 
     public Profile(Long id, User user, List<Record> records, String nintendoCode, Kart favKart, Character favCharacter) {

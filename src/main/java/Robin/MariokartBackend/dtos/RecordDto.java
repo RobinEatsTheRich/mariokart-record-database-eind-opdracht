@@ -25,4 +25,12 @@ public class RecordDto {
     private Kart kart;
     private Character character;
     private Profile profile;
+
+    public boolean isIs200CC() {
+        return is200CC;
+    }
+
+    public void setIs200CC(boolean is200CC) {
+        this.is200CC = is200CC;
+    }
 }

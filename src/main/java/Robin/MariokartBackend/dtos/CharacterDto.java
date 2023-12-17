@@ -8,5 +8,5 @@ import lombok.Setter;
 public class CharacterDto {
     private Long id;
     private String name;
-    private byte[] img;
+    private  String imgLink;
 }

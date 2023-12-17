@@ -8,21 +8,21 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "Courses")
+@Table(name = "courses")
 public class Course {
     @Id
     @GeneratedValue
     private Long id;
     private String name;
-    private byte[] img;
+    @Column(name = "img_link")
+    private String imgLink;
     @OneToMany
     private List<Record> records;
 
-    public Course(Long id, String name, byte[] img, List<Record> records) {
+    public Course(Long id, String name, String imgLink, List<Record> records) {
         this.id = id;
         this.name = name;
-        this.img = img;
-        this.records = records;
+        this.imgLink = getImgLink();
     }
 
     public Course() {

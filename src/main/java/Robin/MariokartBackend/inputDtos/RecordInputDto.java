@@ -54,11 +54,19 @@ public class RecordInputDto {
         this.lap1 = lap1;
         this.lap2 = lap2;
         this.lap3 = lap3;
-        this.lap1 = lap4;
-        this.lap2 = lap5;
-        this.lap3 = lap6;
-        this.lap1 = lap7;
+        this.lap4 = lap4;
+        this.lap5 = lap5;
+        this.lap6 = lap6;
+        this.lap7 = lap7;
         this.is200CC = is200CC;
         this.recording = recording;
+    }
+
+    public boolean isIs200CC() {
+        return is200CC;
+    }
+
+    public void setIs200CC(boolean is200CC) {
+        this.is200CC = is200CC;
     }
 }
