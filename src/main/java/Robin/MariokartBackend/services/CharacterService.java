@@ -3,9 +3,7 @@ package Robin.MariokartBackend.services;
 import Robin.MariokartBackend.dtos.CharacterDto;
 import Robin.MariokartBackend.inputDtos.CharacterInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
-import Robin.MariokartBackend.model.RemoteController;
 import Robin.MariokartBackend.model.Character;
-import Robin.MariokartBackend.repository.RemoteControllerRepository;
 import Robin.MariokartBackend.repository.CharacterRepository;
 import org.springframework.stereotype.Service;
 
@@ -75,27 +73,26 @@ public class CharacterService {
         }
     }
 
-//    public CharacterDto assignRemoteControllerToCharacter(Long id, Long remoteControllerId){
-//        Optional<Character> CharacterOptional = CharacterRepos.findById(id);
-//        Optional<RemoteController> remoteControllerOptional = remoteControllerRepos.findById(remoteControllerId);
-//
-//        if(CharacterOptional.isPresent() && remoteControllerOptional.isPresent()){
-//            Character Character = CharacterOptional.get();
-//            RemoteController remoteController = remoteControllerOptional.get();
-//            Character.setRemoteController(remoteController);
-//            CharacterRepos.save(Character);
-//            return dtoFromCharacter(Character);
-//
-//        }else if(CharacterOptional.isPresent() && remoteControllerOptional.isEmpty()){
-//            throw new RecordNotFoundException("Remote Controller ID cannot be found");
-//
-//        }else if(CharacterOptional.isEmpty() && remoteControllerOptional.isPresent()){
-//            throw new RecordNotFoundException("Character ID cannot be found");
-//
-//        }else{
-//            throw new RecordNotFoundException("Neither ID can be found");
-//        }
-//    }
+    public Long characterIdFromName(String name){
+        Long result = 0l;
+        List<Character> characterList = characterRepos.findAll();
+        if (!characterList.isEmpty()){
+            for (Character character : characterList){
+                if (name.toLowerCase().equals(character.getName().toLowerCase())){
+                    result = character.getId();
+                }
+            }
+        }
+        return result;
+    }
+    public Character characterFromId(Long id){
+        Character result = new Character();
+        Optional<Character> optionalCharacter = characterRepos.findById(id);
+        if (optionalCharacter.isPresent()){
+            result = optionalCharacter.get();
+        }
+        return result;
+    }
 
     public CharacterDto dtoFromCharacter(Character character) {
         CharacterDto dto = new CharacterDto();

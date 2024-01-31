@@ -14,7 +14,7 @@ public class User {
     private String username;
     private String password;
     private String email;
-    @OneToOne
+    @OneToOne(mappedBy = "user")
     private Profile profile;
 
     public User(Long id, String username, String password, String email, Profile profile) {

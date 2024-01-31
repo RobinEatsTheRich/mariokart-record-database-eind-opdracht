@@ -1,6 +1,6 @@
 package Robin.MariokartBackend.controllers;
-
 import Robin.MariokartBackend.dtos.ProfileDto;
+import Robin.MariokartBackend.dtos.UserDto;
 import Robin.MariokartBackend.inputDtos.IdInputDto;
 import Robin.MariokartBackend.inputDtos.ProfileInputDto;
 import Robin.MariokartBackend.services.ProfileService;
@@ -48,17 +48,16 @@ public class ProfileController {
         ProfileDto edittedProfileDto = profileService.editProfile(id, inputDto);
         return ResponseEntity.ok(edittedProfileDto);
     }
+    @PutMapping("/{id}/set_record")
+    public ResponseEntity<ProfileDto> assignProfile(@Valid @PathVariable Long id, @RequestBody IdInputDto profileId) {
+        ProfileDto edittedProfileDto = profileService.assignRecord(id, profileId);
+        return ResponseEntity.ok(edittedProfileDto);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProfile(@PathVariable Long id){
         profileService.deleteProfile(id);
         return new ResponseEntity<>("TV succesfully deleted", HttpStatus.OK);
     }
-
-//    @PutMapping("/{id}/remote_controller")
-//    public ResponseEntity<ProfileDto> assignRemoteControllerToProfile(@PathVariable Long id, @RequestBody IdInputDto inputDto) {
-//        ProfileDto edittedProfileDto = profileService.assignRemoteControllerToProfile(id, inputDto.id);
-//        return ResponseEntity.ok(edittedProfileDto);
-//    }
 
 }

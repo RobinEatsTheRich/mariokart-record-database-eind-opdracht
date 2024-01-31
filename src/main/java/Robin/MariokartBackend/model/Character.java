@@ -15,6 +15,9 @@ public class Character {
     @Column(name = "img_link")
     private String imgLink;
 
+    @OneToOne
+    private Record record;
+
     public Character(Long id, String name,  String imgLink) {
         this.id = id;
         this.name = name;

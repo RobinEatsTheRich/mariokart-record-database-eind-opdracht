@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -18,6 +20,7 @@ public class KartPart {
     private String imgLink;
     @Column(name = "part_type")
     private PartType partType;
+
 
     public KartPart(Long id, String name, String imgLink, PartType partType) {
         this.id = id;

@@ -12,64 +12,73 @@ public class Record {
     @GeneratedValue
     private Long id;
     @Column(name = "total_time")
-    private Integer totalTime;
-    private Integer lap1;
-    private Integer lap2;
-    private Integer lap3;
-    private Integer lap4;
-    private Integer lap5;
-    private Integer lap6;
-    private Integer lap7;
+    private float totalTime;
+    private float lap1;
+    private float lap2;
+    private float lap3;
+    private float lap4;
+    private float lap5;
+    private float lap6;
+    private float lap7;
     @Column(name = "is_200CC")
     private boolean is200CC;
     private byte[] recording;
-
+    @Column(name = "course_id")
+    private Long courseId;
+    @Column(name = "character_id")
+    private Long characterId;
+    @Column(name = "body_id")
+    private Long bodyId;
+    @Column(name = "wheels_id")
+    private Long wheelsId;
+    @Column(name = "glider_id")
+    private Long gliderId;
     @ManyToOne
-    private Course course;
-    @ManyToOne
-    private Kart kart;
-    @ManyToOne
-    private Character character;
-    @OneToOne
+    @JoinColumn(name = "profile_id")
     private Profile profile;
 
-    public Record(Integer totalTime,
-                  Integer lap1,
-                  Integer lap2,
-                  Integer lap3,
+    public Record(float totalTime,
+                  float lap1,
+                  float lap2,
+                  float lap3,
                   boolean is200CC,
-                  byte[] recording,
-                  Course course,
-                  Kart kart,
-                  Character character,
-                  Profile profile) {
+                  Long courseId,
+                  Long characterId,
+                  Long bodyId,
+                  Long wheelsId,
+                  Long gliderId
+//                  byte[] recording,
+    ) {
         this.totalTime = totalTime;
         this.lap1 = lap1;
         this.lap2 = lap2;
         this.lap3 = lap3;
         this.is200CC = is200CC;
-        this.recording = recording;
-        this.course = course;
-        this.kart = kart;
-        this.character = character;
-        this.profile = profile;
+        this.courseId = courseId;
+        this.characterId = characterId;
+        this.bodyId = bodyId;
+        this.wheelsId = wheelsId;
+        this.gliderId = gliderId;
+//        this.recording = recording;
     }
 
     public Record(Long id,
-                  Integer totalTime,
-                  Integer lap1,
-                  Integer lap2,
-                  Integer lap3,
-                  Integer lap4,
-                  Integer lap5,
-                  Integer lap6,
-                  Integer lap7,
+                  float totalTime,
+                  float lap1,
+                  float lap2,
+                  float lap3,
+                  float lap4,
+                  float lap5,
+                  float lap6,
+                  float lap7,
                   boolean is200CC,
-                  byte[] recording,
-                  Course course,
-                  Kart kart,
-                  Character character,
-                  Profile profile) {
+                  Long courseId,
+                  Long characterId,
+                  Long bodyId,
+                  Long wheelsId,
+                  Long gliderId
+//                  byte[] recording,
+                    ) {
         this.id = id;
         this.totalTime = totalTime;
         this.lap1 = lap1;
@@ -80,11 +89,12 @@ public class Record {
         this.lap6 = lap6;
         this.lap7 = lap7;
         this.is200CC = is200CC;
-        this.recording = recording;
-        this.course = course;
-        this.kart = kart;
-        this.character = character;
-        this.profile = profile;
+        this.courseId = courseId;
+        this.characterId = characterId;
+        this.bodyId = bodyId;
+        this.wheelsId = wheelsId;
+        this.gliderId = gliderId;
+//        this.recording = recording;
     }
 
     public Record() {

@@ -3,9 +3,8 @@ package Robin.MariokartBackend.services;
 import Robin.MariokartBackend.dtos.KartPartDto;
 import Robin.MariokartBackend.inputDtos.KartPartInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
-import Robin.MariokartBackend.model.RemoteController;
 import Robin.MariokartBackend.model.KartPart;
-import Robin.MariokartBackend.repository.RemoteControllerRepository;
+import Robin.MariokartBackend.model.KartPart;
 import Robin.MariokartBackend.repository.KartPartRepository;
 import org.springframework.stereotype.Service;
 
@@ -75,27 +74,26 @@ public class KartPartService {
         }
     }
 
-//    public KartPartDto assignRemoteControllerToKartPart(Long id, Long remoteControllerId){
-//        Optional<KartPart> KartPartOptional = KartPartRepos.findById(id);
-//        Optional<RemoteController> remoteControllerOptional = remoteControllerRepos.findById(remoteControllerId);
-//
-//        if(KartPartOptional.isPresent() && remoteControllerOptional.isPresent()){
-//            KartPart KartPart = KartPartOptional.get();
-//            RemoteController remoteController = remoteControllerOptional.get();
-//            KartPart.setRemoteController(remoteController);
-//            KartPartRepos.save(KartPart);
-//            return dtoFromKartPart(KartPart);
-//
-//        }else if(KartPartOptional.isPresent() && remoteControllerOptional.isEmpty()){
-//            throw new RecordNotFoundException("Remote Controller ID cannot be found");
-//
-//        }else if(KartPartOptional.isEmpty() && remoteControllerOptional.isPresent()){
-//            throw new RecordNotFoundException("KartPart ID cannot be found");
-//
-//        }else{
-//            throw new RecordNotFoundException("Neither ID can be found");
-//        }
-//    }
+    public Long kartPartIdFromName(String name){
+        Long result = 0l;
+        List<KartPart> kartPartList = kartPartRepos.findAll();
+        if (!kartPartList.isEmpty()){
+            for (KartPart kartPart : kartPartList){
+                if (name.toLowerCase().equals(kartPart.getName().toLowerCase())){
+                    result = kartPart.getId();
+                }
+            }
+        }
+        return result;
+    }
+    public KartPart kartPartFromId(Long id){
+        KartPart result = new KartPart();
+        Optional<KartPart> optionalKartPart = kartPartRepos.findById(id);
+        if (optionalKartPart.isPresent()){
+            result = optionalKartPart.get();
+        }
+        return result;
+    }
 
     public KartPartDto dtoFromKartPart(KartPart kartPart) {
         KartPartDto dto = new KartPartDto();

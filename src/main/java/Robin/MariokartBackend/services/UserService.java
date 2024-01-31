@@ -1,11 +1,12 @@
 package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.UserDto;
+import Robin.MariokartBackend.inputDtos.IdInputDto;
 import Robin.MariokartBackend.inputDtos.UserInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
-import Robin.MariokartBackend.model.RemoteController;
+import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.model.User;
-import Robin.MariokartBackend.repository.RemoteControllerRepository;
+import Robin.MariokartBackend.repository.ProfileRepository;
 import Robin.MariokartBackend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +19,14 @@ public class UserService {
 
 
     private final UserRepository userRepos;
+    private final ProfileRepository profileRepos;
+    private final ProfileService profileService;
 
-
-    public UserService(UserRepository userRepos) {
+    public UserService(UserRepository userRepos, ProfileRepository profileRepos, ProfileService profileService) {
         this.userRepos = userRepos;
+        this.profileRepos = profileRepos;
+        this.profileService = profileService;
     }
-
 
     public List<UserDto> getAllUsers(){
         List<User> userList = userRepos.findAll();
@@ -65,6 +68,21 @@ public class UserService {
             throw new RecordNotFoundException("ID cannot be found");
         }
     }
+    public UserDto assignProfile(Long userId, IdInputDto profileId){
+        Optional<User> userOptional = userRepos.findById(userId);
+        Optional<Profile> profileOptional = profileRepos.findById(profileId.id);
+        if (userOptional.isPresent() && profileOptional.isPresent()) {
+            User user = userOptional.get();
+            Profile profile = profileOptional.get();
+            user.setProfile(profile);
+            userRepos.save(user);
+            profile.setUser(user);
+            profileRepos.save(profile);
+            return dtoFromUser(user);
+        } else {
+            throw new RecordNotFoundException("ID cannot be found");
+        }
+    }
 
     public void deleteUser(Long id){
         Optional<User> userOptional = userRepos.findById(id);
@@ -75,35 +93,13 @@ public class UserService {
         }
     }
 
-//    public UserDto assignRemoteControllerToUser(Long id, Long remoteControllerId){
-//        Optional<User> UserOptional = UserRepos.findById(id);
-//        Optional<RemoteController> remoteControllerOptional = remoteControllerRepos.findById(remoteControllerId);
-//
-//        if(UserOptional.isPresent() && remoteControllerOptional.isPresent()){
-//            User User = UserOptional.get();
-//            RemoteController remoteController = remoteControllerOptional.get();
-//            User.setRemoteController(remoteController);
-//            UserRepos.save(User);
-//            return dtoFromUser(User);
-//
-//        }else if(UserOptional.isPresent() && remoteControllerOptional.isEmpty()){
-//            throw new RecordNotFoundException("Remote Controller ID cannot be found");
-//
-//        }else if(UserOptional.isEmpty() && remoteControllerOptional.isPresent()){
-//            throw new RecordNotFoundException("User ID cannot be found");
-//
-//        }else{
-//            throw new RecordNotFoundException("Neither ID can be found");
-//        }
-//    }
-
     public UserDto dtoFromUser(User user) {
         UserDto dto = new UserDto();
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         dto.setPassword(user.getPassword());
         dto.setEmail(user.getEmail());
-
+        if (user.getProfile() != null) {dto.setProfileDto(profileService.dtoFromProfile(user.getProfile()));}
         return dto;
     }
 

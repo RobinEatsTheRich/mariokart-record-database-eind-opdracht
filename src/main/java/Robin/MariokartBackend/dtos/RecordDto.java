@@ -1,9 +1,5 @@
 package Robin.MariokartBackend.dtos;
 
-import Robin.MariokartBackend.model.Character;
-import Robin.MariokartBackend.model.Course;
-import Robin.MariokartBackend.model.Kart;
-import Robin.MariokartBackend.model.Profile;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,20 +7,22 @@ import lombok.Setter;
 @Setter
 public class RecordDto {
     private Long id;
-    private Integer totalTime;
-    private Integer lap1;
-    private Integer lap2;
-    private Integer lap3;
-    private Integer lap4;
-    private Integer lap5;
-    private Integer lap6;
-    private Integer lap7;
+    private String totalTime;
+    private String lap1;
+    private String lap2;
+    private String lap3;
+    private String lap4;
+    private String lap5;
+    private String lap6;
+    private String lap7;
     private boolean is200CC;
-    private byte[] recording;
-    private Course course;
-    private Kart kart;
-    private Character character;
-    private Profile profile;
+    private CharacterDto character;
+    private CourseDto course;
+    private KartPartDto body;
+    private KartPartDto wheels;
+    private KartPartDto glider;
+    private String recordHolder;
+    //    private byte[] recording;
 
     public boolean isIs200CC() {
         return is200CC;

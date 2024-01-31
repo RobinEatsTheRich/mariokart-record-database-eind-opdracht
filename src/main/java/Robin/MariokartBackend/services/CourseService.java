@@ -3,9 +3,8 @@ package Robin.MariokartBackend.services;
 import Robin.MariokartBackend.dtos.CourseDto;
 import Robin.MariokartBackend.inputDtos.CourseInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
-import Robin.MariokartBackend.model.RemoteController;
 import Robin.MariokartBackend.model.Course;
-import Robin.MariokartBackend.repository.RemoteControllerRepository;
+import Robin.MariokartBackend.model.Course;
 import Robin.MariokartBackend.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
@@ -75,27 +74,26 @@ public class CourseService {
         }
     }
 
-//    public CourseDto assignRemoteControllerToCourse(Long id, Long remoteControllerId){
-//        Optional<Course> CourseOptional = CourseRepos.findById(id);
-//        Optional<RemoteController> remoteControllerOptional = remoteControllerRepos.findById(remoteControllerId);
-//
-//        if(CourseOptional.isPresent() && remoteControllerOptional.isPresent()){
-//            Course Course = CourseOptional.get();
-//            RemoteController remoteController = remoteControllerOptional.get();
-//            Course.setRemoteController(remoteController);
-//            CourseRepos.save(Course);
-//            return dtoFromCourse(Course);
-//
-//        }else if(CourseOptional.isPresent() && remoteControllerOptional.isEmpty()){
-//            throw new RecordNotFoundException("Remote Controller ID cannot be found");
-//
-//        }else if(CourseOptional.isEmpty() && remoteControllerOptional.isPresent()){
-//            throw new RecordNotFoundException("Course ID cannot be found");
-//
-//        }else{
-//            throw new RecordNotFoundException("Neither ID can be found");
-//        }
-//    }
+    public Long courseIdFromName(String name){
+        Long result = 0l;
+        List<Course> courseList = courseRepos.findAll();
+        if (!courseList.isEmpty()){
+            for (Course course : courseList){
+                if (name.toLowerCase().equals(course.getName().toLowerCase())){
+                    result = course.getId();
+                }
+            }
+        }
+        return result;
+    }
+    public Course courseFromId(Long id){
+        Course result = new Course();
+        Optional<Course> optionalCourse = courseRepos.findById(id);
+        if (optionalCourse.isPresent()){
+            result = optionalCourse.get();
+        }
+        return result;
+    }
 
     public CourseDto dtoFromCourse(Course course) {
         CourseDto dto = new CourseDto();

@@ -1,6 +1,7 @@
 package Robin.MariokartBackend.controllers;
 
 import Robin.MariokartBackend.dtos.RecordDto;
+import Robin.MariokartBackend.dtos.UserDto;
 import Robin.MariokartBackend.inputDtos.IdInputDto;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
 import Robin.MariokartBackend.services.RecordService;
@@ -52,12 +53,12 @@ public class RecordController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteRecord(@PathVariable Long id){
         recordService.deleteRecord(id);
-        return new ResponseEntity<>("TV succesfully deleted", HttpStatus.OK);
+        return new ResponseEntity<>("Record succesfully deleted", HttpStatus.OK);
     }
 
-//    @PutMapping("/{id}/remote_controller")
-//    public ResponseEntity<RecordDto> assignRemoteControllerToRecord(@PathVariable Long id, @RequestBody IdInputDto inputDto) {
-//        RecordDto edittedRecordDto = recordService.assignRemoteControllerToRecord(id, inputDto.id);
+//    @PutMapping("/{id}/set_character")
+//    public ResponseEntity<RecordDto> assignProfile(@Valid @PathVariable Long id, @RequestBody IdInputDto profileId) {
+//        RecordDto edittedRecordDto = recordService.assignCharacter(id, profileId);
 //        return ResponseEntity.ok(edittedRecordDto);
 //    }
 

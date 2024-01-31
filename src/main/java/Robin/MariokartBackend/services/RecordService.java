@@ -3,9 +3,10 @@ package Robin.MariokartBackend.services;
 import Robin.MariokartBackend.dtos.RecordDto;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
-import Robin.MariokartBackend.model.RemoteController;
 import Robin.MariokartBackend.model.Record;
-import Robin.MariokartBackend.repository.RemoteControllerRepository;
+import Robin.MariokartBackend.repository.CharacterRepository;
+import Robin.MariokartBackend.repository.CourseRepository;
+import Robin.MariokartBackend.repository.KartPartRepository;
 import Robin.MariokartBackend.repository.RecordRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +19,27 @@ public class RecordService {
 
 
     private final RecordRepository recordRepos;
+    private final CharacterRepository characterRepos;
+    private final CharacterService characterService;
+    private final CourseRepository repository;
+    private final CourseService courseService;
+    private final KartPartRepository kartPartRepos;
+    private final KartPartService kartpartService;
 
-
-    public RecordService(RecordRepository recordRepos) {
+    public RecordService(RecordRepository recordRepos,
+                         CharacterRepository characterRepos,
+                         CharacterService characterService,
+                         CourseRepository repository,
+                         CourseService courseService,
+                         KartPartRepository kartPartRepos,
+                         KartPartService kartpartService) {
         this.recordRepos = recordRepos;
+        this.characterRepos = characterRepos;
+        this.characterService = characterService;
+        this.repository = repository;
+        this.courseService = courseService;
+        this.kartPartRepos = kartPartRepos;
+        this.kartpartService = kartpartService;
     }
 
 
@@ -75,56 +93,65 @@ public class RecordService {
         }
     }
 
-//    public RecordDto assignRemoteControllerToRecord(Long id, Long remoteControllerId){
-//        Optional<Record> RecordOptional = RecordRepos.findById(id);
-//        Optional<RemoteController> remoteControllerOptional = remoteControllerRepos.findById(remoteControllerId);
-//
-//        if(RecordOptional.isPresent() && remoteControllerOptional.isPresent()){
-//            Record Record = RecordOptional.get();
-//            RemoteController remoteController = remoteControllerOptional.get();
-//            Record.setRemoteController(remoteController);
-//            RecordRepos.save(Record);
-//            return dtoFromRecord(Record);
-//
-//        }else if(RecordOptional.isPresent() && remoteControllerOptional.isEmpty()){
-//            throw new RecordNotFoundException("Remote Controller ID cannot be found");
-//
-//        }else if(RecordOptional.isEmpty() && remoteControllerOptional.isPresent()){
-//            throw new RecordNotFoundException("Record ID cannot be found");
-//
-//        }else{
-//            throw new RecordNotFoundException("Neither ID can be found");
-//        }
-//    }
+    public String stringFromTimefloat(float f){
+        String result = Float.toString(f);
+        String substring1 = result.substring(0,1);
+        String substring2 = result.substring(2,4);
+        String substring3 = result.substring(4);
+        result = substring1+":"+substring2+"."+substring3;
+
+        return result;
+    }
 
     public RecordDto dtoFromRecord(Record record) {
         RecordDto dto = new RecordDto();
         dto.setId(record.getId());
-        dto.setCourse(record.getCourse());
-        dto.setTotalTime(record.getTotalTime());
-        dto.setLap1(record.getLap1());
-        dto.setLap2(record.getLap2());
-        dto.setLap3(record.getLap3());
-        if (record.getLap4() != null);
-        {
-            dto.setLap4(record.getLap4());
+        dto.setTotalTime(stringFromTimefloat(record.getTotalTime()));
+        dto.setLap1(stringFromTimefloat(record.getLap1()));
+        dto.setLap2(stringFromTimefloat(record.getLap2()));
+        dto.setLap3(stringFromTimefloat(record.getLap3()));
+        if (record.getLap4() > 0){
+            dto.setLap4(stringFromTimefloat(record.getLap4()));
         }
-        if (record.getLap5() != null);
-        {
-            dto.setLap5(record.getLap5());
+        if (record.getLap5() > 0){
+            dto.setLap5(stringFromTimefloat(record.getLap5()));
         }
-        if (record.getLap6() != null);
-        {
-            dto.setLap6(record.getLap6());
+        if (record.getLap6() > 0){
+            dto.setLap6(stringFromTimefloat(record.getLap6()));
         }
-        if (record.getLap7() != null);
-        {
-            dto.setLap7(record.getLap7());
+        if (record.getLap7() > 0){
+            dto.setLap7(stringFromTimefloat(record.getLap7()));
         }
         dto.setIs200CC(record.isIs200CC());
-        dto.setKart(record.getKart());
-        dto.setCharacter(record.getCharacter());
-        dto.setProfile(record.getProfile());
+//        dto.setKart(record.getKart());
+        if (record.getCharacterId() != null){
+            dto.setCharacter(
+                    characterService.dtoFromCharacter(characterService.characterFromId(record.getCharacterId()))
+            );
+        }
+        if (record.getCourseId() != null){
+            dto.setCourse(
+                    courseService.dtoFromCourse(courseService.courseFromId(record.getCourseId()))
+            );
+        }
+        if (record.getBodyId() != null){
+            dto.setBody(
+                    kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getBodyId()))
+            );
+        }
+        if (record.getWheelsId() != null){
+            dto.setWheels(
+                    kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getWheelsId()))
+            );
+        }
+        if (record.getGliderId() != null){
+            dto.setGlider(
+                    kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getGliderId()))
+            );
+        }
+        if (record.getProfile() != null && record.getProfile().getUser() != null){
+            dto.setRecordHolder(record.getProfile().getUser().getUsername());
+        }
 
         return dto;
     }
@@ -136,23 +163,24 @@ public class RecordService {
         record.setLap1(dto.getLap1());
         record.setLap2(dto.getLap2());
         record.setLap3(dto.getLap3());
-        if (dto.getLap4() != null);
-        {
+        if (dto.getLap4() > 0){
             record.setLap4(dto.getLap4());
         }
-        if (dto.getLap5() != null);
-        {
+        if (dto.getLap5() > 0){
             record.setLap5(dto.getLap5());
         }
-        if (dto.getLap6() != null);
-        {
+        if (dto.getLap6() > 0){
             record.setLap6(dto.getLap6());
         }
-        if (dto.getLap7() != null);
-        {
+        if (dto.getLap7() > 0){
             record.setLap7(dto.getLap7());
         }
         record.setIs200CC(dto.isIs200CC());
+        record.setCharacterId(characterService.characterIdFromName(dto.getCharacterName()));
+        record.setCourseId(courseService.courseIdFromName(dto.getCourseName()));
+        record.setBodyId(kartpartService.kartPartIdFromName(dto.getBodyName()));
+        record.setWheelsId(kartpartService.kartPartIdFromName(dto.getWheelsName()));
+        record.setGliderId(kartpartService.kartPartIdFromName(dto.getGliderName()));
         return record;
     }
 }

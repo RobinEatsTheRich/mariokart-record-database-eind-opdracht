@@ -17,4 +17,7 @@ public class ProfileInputDto {
     public ProfileInputDto(String nintendoCode) {
         this.nintendoCode = nintendoCode;
     }
+    public ProfileInputDto(){
+
+    }
 }

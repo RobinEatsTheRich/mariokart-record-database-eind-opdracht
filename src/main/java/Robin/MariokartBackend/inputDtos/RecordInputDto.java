@@ -8,48 +8,64 @@ public class RecordInputDto {
 
     private Long id;
     @PositiveOrZero
-    private Integer totalTime;
+    private float totalTime;
     @PositiveOrZero
-    private Integer lap1;
+    private float lap1;
     @PositiveOrZero
-    private Integer lap2;
+    private float lap2;
     @PositiveOrZero
-    private Integer lap3;
+    private float lap3;
     @PositiveOrZero
-    private Integer lap4;
+    private float lap4;
     @PositiveOrZero
-    private Integer lap5;
+    private float lap5;
     @PositiveOrZero
-    private Integer lap6;
+    private float lap6;
     @PositiveOrZero
-    private Integer lap7;
+    private float lap7;
     private boolean is200CC;
-    private byte[] recording;
+    //private byte[] recording;
+    private String courseName;
+    private String characterName;
+    private String bodyName;
+    private String wheelsName;
+    private String gliderName;
 
-    public RecordInputDto(Integer totalTime,
-                          Integer lap1,
-                          Integer lap2,
-                          Integer lap3,
+    public RecordInputDto(float totalTime,
+                          float lap1,
+                          float lap2,
+                          float lap3,
                           boolean is200CC,
-                          byte[] recording) {
+                          String courseName,
+                          String characterName,
+                          String bodyName,
+                          String wheelsName,
+                          String gliderName) {
         this.totalTime = totalTime;
         this.lap1 = lap1;
         this.lap2 = lap2;
         this.lap3 = lap3;
         this.is200CC = is200CC;
-        this.recording = recording;
+        this.courseName = courseName;
+        this.characterName = characterName;
+        this.bodyName = bodyName;
+        this.wheelsName = wheelsName;
+        this.gliderName = gliderName;
     }
-
-    public RecordInputDto(Integer totalTime,
-                          Integer lap1,
-                          Integer lap2,
-                          Integer lap3,
-                          Integer lap4,
-                          Integer lap5,
-                          Integer lap6,
-                          Integer lap7,
+    public RecordInputDto(float totalTime,
+                          float lap1,
+                          float lap2,
+                          float lap3,
+                          float lap4,
+                          float lap5,
+                          float lap6,
+                          float lap7,
                           boolean is200CC,
-                          byte[] recording) {
+                          String courseName,
+                          String characterName,
+                          String bodyName,
+                          String wheelsName,
+                          String gliderName) {
         this.totalTime = totalTime;
         this.lap1 = lap1;
         this.lap2 = lap2;
@@ -59,7 +75,14 @@ public class RecordInputDto {
         this.lap6 = lap6;
         this.lap7 = lap7;
         this.is200CC = is200CC;
-        this.recording = recording;
+        this.courseName = courseName;
+        this.characterName = characterName;
+        this.bodyName = bodyName;
+        this.wheelsName = wheelsName;
+        this.gliderName = gliderName;
+    }
+
+    public RecordInputDto() {
     }
 
     public boolean isIs200CC() {
