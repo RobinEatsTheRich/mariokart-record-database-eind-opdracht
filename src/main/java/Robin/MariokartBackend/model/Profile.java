@@ -26,6 +26,9 @@ public class Profile {
         this.records = records;
         this.nintendoCode = nintendoCode;
     }
+    public Profile(User user) {
+        this.user = user;
+    }
 
     public Profile() {
     }

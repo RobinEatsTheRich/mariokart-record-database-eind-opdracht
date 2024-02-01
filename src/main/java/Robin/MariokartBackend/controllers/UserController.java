@@ -28,9 +28,9 @@ public class UserController {
         return ResponseEntity.ok(userDtoList);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUser(id));
+    @GetMapping("/{username}")
+    public ResponseEntity<UserDto> getUser(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getUser(username));
     }
 
     @PostMapping
@@ -39,25 +39,25 @@ public class UserController {
         URI uri = URI.create(
                 ServletUriComponentsBuilder
                         .fromCurrentRequest()
-                        .path("/"+addedUserDto.getId()).toUriString());
+                        .path("/"+addedUserDto.getUsername()).toUriString());
 
         return ResponseEntity.created(uri).body(addedUserDto);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@Valid @PathVariable Long id, @RequestBody UserInputDto inputDto) {
-        UserDto edittedUserDto = userService.editUser(id, inputDto);
+    @PutMapping("/{username}")
+    public ResponseEntity<UserDto> updateUser(@Valid @PathVariable String username, @RequestBody UserInputDto inputDto) {
+        UserDto edittedUserDto = userService.editUser(username, inputDto);
         return ResponseEntity.ok(edittedUserDto);
     }
 
-    @PutMapping("/{id}/set_profile")
-    public ResponseEntity<UserDto> assignProfile(@Valid @PathVariable Long id, @RequestBody IdInputDto profileId) {
-        UserDto edittedUserDto = userService.assignProfile(id, profileId);
+    @PutMapping("/{username}/set_profile")
+    public ResponseEntity<UserDto> assignProfile(@Valid @PathVariable String username, @RequestBody IdInputDto profileId) {
+        UserDto edittedUserDto = userService.assignProfile(username, profileId);
         return ResponseEntity.ok(edittedUserDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id){
+    public ResponseEntity<String> deleteUser(@PathVariable String id){
         userService.deleteUser(id);
         return new ResponseEntity<>("TV succesfully deleted", HttpStatus.OK);
     }
