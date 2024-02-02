@@ -3,9 +3,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
+
 @Getter
 @Setter
+@Entity
 @Table(name = "Records")
 public class Record {
     @Id
@@ -22,7 +23,6 @@ public class Record {
     private float lap7;
     @Column(name = "is_200CC")
     private boolean is200CC;
-    private byte[] recording;
     @Column(name = "course_id")
     private Long courseId;
     @Column(name = "character_id")
@@ -36,6 +36,7 @@ public class Record {
     @ManyToOne
     @JoinColumn(name = "profile_id")
     private Profile profile;
+    private byte[] recording;
 
     public Record(float totalTime,
                   float lap1,
@@ -46,8 +47,8 @@ public class Record {
                   Long characterId,
                   Long bodyId,
                   Long wheelsId,
-                  Long gliderId
-//                  byte[] recording,
+                  Long gliderId,
+                  byte[] recording
     ) {
         this.totalTime = totalTime;
         this.lap1 = lap1;
@@ -59,7 +60,7 @@ public class Record {
         this.bodyId = bodyId;
         this.wheelsId = wheelsId;
         this.gliderId = gliderId;
-//        this.recording = recording;
+        this.recording = recording;
     }
 
     public Record(Long id,
@@ -76,9 +77,9 @@ public class Record {
                   Long characterId,
                   Long bodyId,
                   Long wheelsId,
-                  Long gliderId
-//                  byte[] recording,
-                    ) {
+                  Long gliderId,
+                  byte[] recording
+    ) {
         this.id = id;
         this.totalTime = totalTime;
         this.lap1 = lap1;
@@ -94,7 +95,7 @@ public class Record {
         this.bodyId = bodyId;
         this.wheelsId = wheelsId;
         this.gliderId = gliderId;
-//        this.recording = recording;
+        this.recording = recording;
     }
 
     public Record() {
@@ -108,3 +109,6 @@ public class Record {
         this.is200CC = is200CC;
     }
 }
+
+
+
