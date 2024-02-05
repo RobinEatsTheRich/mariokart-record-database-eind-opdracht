@@ -5,16 +5,17 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-@Getter
-@Setter
 @Entity
 @Table(name= "recording_data")
+@Getter
+@Setter
 public class RecordingData {
     @Id
     @GeneratedValue
     private Long id;
-
+    @Column
     private String name;
+    @Column
     private String type;
     @Lob
     private byte[] recordingData;
