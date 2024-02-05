@@ -1,9 +1,10 @@
 package Robin.MariokartBackend.controllers;
 
+import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.model.RecordingData;
 import Robin.MariokartBackend.model.User;
-import Robin.MariokartBackend.repository.RecordingRepository;
-import Robin.MariokartBackend.repository.UserRepository;
+import Robin.MariokartBackend.repository.RecordRepository;
+import Robin.MariokartBackend.repository.RecordingDataRepository;
 import Robin.MariokartBackend.services.RecordingDataService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,33 +19,33 @@ import java.util.Optional;
 public class RecordingDataController {
 
     private final RecordingDataService recordingDataService;
-    private final RecordingRepository recordingRepository;
-    private final UserRepository userRepository;
+    private final RecordingDataRepository recordingDataRepository;
+    private final RecordRepository recordRepository;
 
-    public RecordingDataController(RecordingDataService recordingDataService, RecordingRepository recordingRepository, UserRepository userRepository) {
+    public RecordingDataController(RecordingDataService recordingDataService, RecordingDataRepository recordingDataRepository, RecordRepository recordRepository) {
         this.recordingDataService = recordingDataService;
-        this.recordingRepository = recordingRepository;
-        this.userRepository = userRepository;
+        this.recordingDataRepository = recordingDataRepository;
+        this.recordRepository = recordRepository;
     }
 
 
     @PostMapping
     public ResponseEntity<Object> uploadRecordingData(@RequestParam("file")MultipartFile multipartFile,
-                                                      @RequestParam String username) throws IOException {
-        String recording = recordingDataService.uploadRecording(multipartFile,username);
-        return ResponseEntity.ok("file has been uploaded, "+ recording);
+                                                      @RequestParam Long recordId) throws IOException {
+        String recording = recordingDataService.uploadRecording(multipartFile,recordId);
+        return ResponseEntity.ok("file has been uploaded: "+ recording);
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<Object> downloadRecording(@PathVariable("username") String username) throws IOException {
-        byte[] recording = recordingDataService.downloadRecording(username);
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> downloadRecording(@PathVariable("id") Long recordId) throws IOException {
+        byte[] recording = recordingDataService.downloadRecording(recordId);
 
-        Optional<User> optionalUser = userRepository.findById(username);
-        User user = new User();
-        if (optionalUser.isPresent()){
-            user = optionalUser.get();
+        Optional<Record> optionalRecord = recordRepository.findById(recordId);
+        Record record = new Record();
+        if (optionalRecord.isPresent()){
+            record = optionalRecord.get();
         }
-        Optional<RecordingData> optionalRecordingData = recordingRepository.findById(user.getRecordingData().getId());
+        Optional<RecordingData> optionalRecordingData = recordingDataRepository.findById(record.getRecordingData().getId());
         MediaType mediaType = MediaType.valueOf(optionalRecordingData.get().getType());
         return ResponseEntity.ok().contentType(mediaType).body(recording);
 

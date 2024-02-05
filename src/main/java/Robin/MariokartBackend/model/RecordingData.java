@@ -21,15 +21,14 @@ public class RecordingData {
     private byte[] recordingData;
 
     @OneToOne
-    @JoinColumn(name = "user",referencedColumnName = "username")
-    private  User user;
+    private  Record record;
 
-    public RecordingData(Long id, String name, String type, byte[] recordingData, User user) {
+    public RecordingData(Long id, String name, String type, byte[] recordingData, Record  record) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.recordingData = recordingData;
-        this.user = user;
+        this.record = record;
     }
 
     public RecordingData() {

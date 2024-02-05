@@ -36,7 +36,9 @@ public class Record {
     @ManyToOne
     @JoinColumn(name = "profile_id")
     private Profile profile;
-    private byte[] recording;
+    @OneToOne(mappedBy = "record")
+    @JoinColumn(name = "recordingData_id")
+    private RecordingData recordingData;
 
     public Record(float totalTime,
                   float lap1,
@@ -47,8 +49,7 @@ public class Record {
                   Long characterId,
                   Long bodyId,
                   Long wheelsId,
-                  Long gliderId,
-                  byte[] recording
+                  Long gliderId
     ) {
         this.totalTime = totalTime;
         this.lap1 = lap1;
@@ -60,7 +61,6 @@ public class Record {
         this.bodyId = bodyId;
         this.wheelsId = wheelsId;
         this.gliderId = gliderId;
-        this.recording = recording;
     }
 
     public Record(Long id,
@@ -77,8 +77,7 @@ public class Record {
                   Long characterId,
                   Long bodyId,
                   Long wheelsId,
-                  Long gliderId,
-                  byte[] recording
+                  Long gliderId
     ) {
         this.id = id;
         this.totalTime = totalTime;
@@ -95,7 +94,6 @@ public class Record {
         this.bodyId = bodyId;
         this.wheelsId = wheelsId;
         this.gliderId = gliderId;
-        this.recording = recording;
     }
 
     public Record() {

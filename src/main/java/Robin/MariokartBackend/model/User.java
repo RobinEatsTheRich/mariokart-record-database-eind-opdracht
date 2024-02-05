@@ -18,8 +18,6 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Profile profile;
     private List<UserRole> userRoles;
-    @OneToOne(mappedBy = "user")
-    private RecordingData recordingData;
 
     public User(String username, String password, String email, Profile profile, List<UserRole> userRoles) {
         this.username = username;
