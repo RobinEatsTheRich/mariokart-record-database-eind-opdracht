@@ -1,10 +1,12 @@
 package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.KartPartDto;
+import Robin.MariokartBackend.dtos.ProfileDto;
 import Robin.MariokartBackend.inputDtos.KartPartInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.KartPart;
 import Robin.MariokartBackend.model.KartPart;
+import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.repository.KartPartRepository;
 import org.springframework.stereotype.Service;
 
@@ -35,34 +37,21 @@ public class KartPartService {
     }
 
     public KartPartDto getKartPart(Long id){
-        Optional<KartPart> kartPartOptional = kartPartRepos.findById(id);
-        if (kartPartOptional.isPresent()) {
-            KartPart kartPart = kartPartOptional.get();
-            return dtoFromKartPart(kartPart);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
+        return dtoFromKartPart(kartPartFromId(id));
     }
 
     public KartPartDto addKartPart(KartPartInputDto dto){
-        KartPart kartPart = KartPartFromDto(dto);
+        KartPart kartPart = kartPartFromDto(dto);
         kartPartRepos.save(kartPart);
         return dtoFromKartPart(kartPart);
     }
 
     public KartPartDto editKartPart(Long id, KartPartInputDto dto){
-        Optional<KartPart> kartPartOptional = kartPartRepos.findById(id);
-        if (kartPartOptional.isPresent()) {
-            KartPart ogKartPart = kartPartOptional.get();
-            KartPart kartPart = KartPartFromDto(dto);
-            kartPart.setId(ogKartPart.getId());
-
-            kartPartRepos.save(kartPart);
-
-            return dtoFromKartPart(kartPart);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
+        KartPartDto result;
+        KartPart kartPart = kartPartFromDto(dto);
+        kartPartRepos.save(kartPart);
+        result = dtoFromKartPart(kartPartFromId(id));
+        return result;
     }
 
     public void deleteKartPart(Long id){
@@ -70,7 +59,7 @@ public class KartPartService {
         if (kartPartOptional.isPresent()) {
             kartPartRepos.deleteById(id);
         } else {
-            throw new RecordNotFoundException("ID cannot be found");
+            throw new RecordNotFoundException("The KartPart corresponding to ID "+id+" could not be found in the database");
         }
     }
 
@@ -91,6 +80,8 @@ public class KartPartService {
         Optional<KartPart> optionalKartPart = kartPartRepos.findById(id);
         if (optionalKartPart.isPresent()){
             result = optionalKartPart.get();
+        } else {
+            throw new RecordNotFoundException("The KartPart corresponding to ID "+id+" could not be found in the database");
         }
         return result;
     }
@@ -104,7 +95,7 @@ public class KartPartService {
         return dto;
     }
 
-    public KartPart KartPartFromDto (KartPartInputDto dto) {
+    public KartPart kartPartFromDto (KartPartInputDto dto) {
         KartPart kartPart = new KartPart();
         kartPart.setId(dto.getId());
         kartPart.setName(dto.getName());

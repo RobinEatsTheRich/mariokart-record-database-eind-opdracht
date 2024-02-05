@@ -43,56 +43,36 @@ public class UserService {
     }
 
     public UserDto getUser(String username){
-        Optional<User> userOptional = userRepos.findById(username);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            return dtoFromUser(user);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
+        UserDto result= dtoFromUser(userFromName(username));
+        return result;
     }
 
-    public UserDto addUser(UserInputDto dto){
+    public UserDto createUser(UserInputDto dto){
         User user = userFromDto(dto);
         userRepos.save(user);
-        return dtoFromUser(user);
+        user = userFromName(user.getUsername());
+        profileService.createProfile(user.getUsername(),user);
+        user.setProfile(profileService.profileFromName(user.getUsername()));
+        userRepos.save(user);
+
+        return dtoFromUser(userFromName(user.getUsername()));
     }
 
     public UserDto editUser(String username, UserInputDto dto){
-        Optional<User> userOptional = userRepos.findById(username);
-        if (userOptional.isPresent()) {
-            User ogUser = userOptional.get();
-            User user = userFromDto(dto);
-
-            userRepos.save(user);
-
-            return dtoFromUser(user);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
-    }
-    public UserDto assignProfile(String username, IdInputDto profileId){
-        Optional<User> userOptional = userRepos.findById(username);
-        Optional<Profile> profileOptional = profileRepos.findById(profileId.id);
-        if (userOptional.isPresent() && profileOptional.isPresent()) {
-            User user = userOptional.get();
-            Profile profile = profileOptional.get();
-            user.setProfile(profile);
-            userRepos.save(user);
-            profile.setUser(user);
-            profileRepos.save(profile);
-            return dtoFromUser(user);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
+        UserDto result;
+        User user = userFromDto(dto);
+        userRepos.save(user);
+        result = dtoFromUser(userFromName(username));
+        return result;
     }
 
     public void deleteUser(String username){
+        profileService.deleteProfile(username);
         Optional<User> userOptional = userRepos.findById(username);
         if (userOptional.isPresent()) {
             userRepos.deleteById(username);
         } else {
-            throw new RecordNotFoundException("ID cannot be found");
+            throw new RecordNotFoundException("User "+username+" could not be found in the database");
         }
     }
 
@@ -104,6 +84,19 @@ public class UserService {
         return result;
     }
 
+
+    public User userFromName(String username){
+        User result;
+        Optional<User> userOptional = userRepos.findById(username);
+        if (userOptional.isPresent())
+        {
+            result = userOptional.get();
+        } else{
+            throw new RecordNotFoundException("User "+username+" could not be found in the database");
+        }
+        return result;
+    }
+
     public UserDto dtoFromUser(User user) {
         UserDto dto = new UserDto();
         dto.setUsername(user.getUsername());
@@ -111,7 +104,7 @@ public class UserService {
         dto.setEmail(user.getEmail());
         dto.setUserRoles(user.getUserRoles());
         if (user.getProfile() != null){
-            dto.setProfileDto(profileService.dtoFromProfile(user.getProfile()));
+            dto.setProfile(profileService.dtoFromProfile(user.getProfile()));
         }
         return dto;
     }

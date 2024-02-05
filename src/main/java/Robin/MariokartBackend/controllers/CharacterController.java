@@ -52,13 +52,6 @@ public class CharacterController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCharacter(@PathVariable Long id){
         characterService.deleteCharacter(id);
-        return new ResponseEntity<>("TV succesfully deleted", HttpStatus.OK);
+        return new ResponseEntity<>("Character "+id+" succesfully deleted!", HttpStatus.OK);
     }
-
-//    @PutMapping("/{id}/remote_controller")
-//    public ResponseEntity<CharacterDto> assignRemoteControllerToCharacter(@PathVariable Long id, @RequestBody IdInputDto inputDto) {
-//        CharacterDto edittedCharacterDto = characterService.assignRemoteControllerToCharacter(id, inputDto.id);
-//        return ResponseEntity.ok(edittedCharacterDto);
-//    }
-
 }

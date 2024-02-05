@@ -11,8 +11,7 @@ import java.util.List;
 @Table(name = "Profiles")
 public class Profile {
     @Id
-    @GeneratedValue
-    private Long id;
+    private String userName;
     @OneToOne
     private User user;
     @OneToMany(mappedBy = "profile")
@@ -20,13 +19,14 @@ public class Profile {
     @Column(name = "nintendo_code")
     private String nintendoCode;
 
-    public Profile(Long id,User user,List<Record> records, String nintendoCode) {
-        this.id = id;
+    public Profile(String userName,User user,List<Record> records, String nintendoCode) {
+        this.userName = userName;
         this.user = user;
         this.records = records;
         this.nintendoCode = nintendoCode;
     }
-    public Profile(User user) {
+    public Profile(String userName, User user) {
+        this.userName = userName;
         this.user = user;
     }
 

@@ -28,14 +28,14 @@ public class UserController {
         return ResponseEntity.ok(userDtoList);
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<UserDto> getUser(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getUser(username));
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUser(@PathVariable String id) {
+        return ResponseEntity.ok(userService.getUser(id));
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> addUser (@Valid @RequestBody UserInputDto inputDto){
-        UserDto addedUserDto = userService.addUser(inputDto);
+    public ResponseEntity<UserDto> createUser (@Valid @RequestBody UserInputDto inputDto){
+        UserDto addedUserDto = userService.createUser(inputDto);
         URI uri = URI.create(
                 ServletUriComponentsBuilder
                         .fromCurrentRequest()
@@ -44,21 +44,15 @@ public class UserController {
         return ResponseEntity.created(uri).body(addedUserDto);
     }
 
-    @PutMapping("/{username}")
-    public ResponseEntity<UserDto> updateUser(@Valid @PathVariable String username, @RequestBody UserInputDto inputDto) {
-        UserDto edittedUserDto = userService.editUser(username, inputDto);
-        return ResponseEntity.ok(edittedUserDto);
-    }
-
-    @PutMapping("/{username}/set_profile")
-    public ResponseEntity<UserDto> assignProfile(@Valid @PathVariable String username, @RequestBody IdInputDto profileId) {
-        UserDto edittedUserDto = userService.assignProfile(username, profileId);
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(@Valid @PathVariable String id, @RequestBody UserInputDto inputDto) {
+        UserDto edittedUserDto = userService.editUser(id, inputDto);
         return ResponseEntity.ok(edittedUserDto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable String id){
         userService.deleteUser(id);
-        return new ResponseEntity<>("TV succesfully deleted", HttpStatus.OK);
+        return new ResponseEntity<>("User "+id+" succesfully deleted!", HttpStatus.OK);
     }
 }

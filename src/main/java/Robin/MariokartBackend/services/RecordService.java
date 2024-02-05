@@ -3,11 +3,10 @@ package Robin.MariokartBackend.services;
 import Robin.MariokartBackend.dtos.RecordDto;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
+import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.model.Record;
-import Robin.MariokartBackend.repository.CharacterRepository;
-import Robin.MariokartBackend.repository.CourseRepository;
-import Robin.MariokartBackend.repository.KartPartRepository;
-import Robin.MariokartBackend.repository.RecordRepository;
+import Robin.MariokartBackend.repository.*;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -54,34 +53,21 @@ public class RecordService {
     }
 
     public RecordDto getRecord(Long id){
-        Optional<Record> recordOptional = recordRepos.findById(id);
-        if (recordOptional.isPresent()) {
-            Record record = recordOptional.get();
-            return dtoFromRecord(record);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
+        return dtoFromRecord(recordFromId(id));
     }
 
-    public RecordDto addRecord(RecordInputDto dto){
+    public RecordDto createRecord(RecordInputDto dto){
         Record record = recordFromDto(dto);
         recordRepos.save(record);
         return dtoFromRecord(record);
     }
 
     public RecordDto editRecord(Long id, RecordInputDto dto){
-        Optional<Record> recordOptional = recordRepos.findById(id);
-        if (recordOptional.isPresent()) {
-            Record ogRecord = recordOptional.get();
-            Record record = recordFromDto(dto);
-            record.setId(ogRecord.getId());
-
-            recordRepos.save(record);
-
-            return dtoFromRecord(record);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
+        RecordDto result;
+        Record record = recordFromId(id);
+        recordRepos.save(record);
+        result = dtoFromRecord(recordFromId(id));
+        return result;
     }
 
     public void deleteRecord(Long id){
@@ -89,7 +75,7 @@ public class RecordService {
         if (recordOptional.isPresent()) {
             recordRepos.deleteById(id);
         } else {
-            throw new RecordNotFoundException("ID cannot be found");
+            throw new RecordNotFoundException("The record corresponding to ID:"+id+" could not be found in the database");
         }
     }
 
@@ -100,6 +86,18 @@ public class RecordService {
         String substring3 = result.substring(4);
         result = substring1+":"+substring2+"."+substring3;
 
+        return result;
+    }
+
+    public Record recordFromId(Long id){
+        Record result;
+        Optional<Record> recordOptional = recordRepos.findById(id);
+        if (recordOptional.isPresent())
+        {
+            result = recordOptional.get();
+        } else{
+            throw new RecordNotFoundException("The record corresponding to ID:"+id+" could not be found in the database");
+        }
         return result;
     }
 

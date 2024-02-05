@@ -14,5 +14,5 @@ public class UserDto {
     private String password;
     private String email;
     private List<UserRole> userRoles;
-    private ProfileDto profileDto;
+    private ProfileDto profile;
 }

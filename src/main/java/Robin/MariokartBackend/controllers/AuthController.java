@@ -47,11 +47,4 @@ public class AuthController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
-
-    @GetMapping("/test")
-    public String findUsername(@AuthenticationPrincipal UserDetails userDetails){
-        return userDetails.getUsername();
-
-
-    }
 }

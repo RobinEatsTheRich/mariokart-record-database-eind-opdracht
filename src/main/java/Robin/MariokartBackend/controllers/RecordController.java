@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -34,8 +36,8 @@ public class RecordController {
     }
 
     @PostMapping
-    public ResponseEntity<RecordDto> addRecord (@Valid @RequestBody RecordInputDto inputDto){
-        RecordDto addedRecordDto = recordService.addRecord(inputDto);
+    public ResponseEntity<RecordDto> createRecord (@Valid @RequestBody RecordInputDto inputDto){
+        RecordDto addedRecordDto = recordService.createRecord(inputDto);
         URI uri = URI.create(
                 ServletUriComponentsBuilder
                         .fromCurrentRequest()
@@ -53,13 +55,6 @@ public class RecordController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteRecord(@PathVariable Long id){
         recordService.deleteRecord(id);
-        return new ResponseEntity<>("Record succesfully deleted", HttpStatus.OK);
+        return new ResponseEntity<>("Record "+id+" succesfully deleted!", HttpStatus.OK);
     }
-
-//    @PutMapping("/{id}/set_character")
-//    public ResponseEntity<RecordDto> assignProfile(@Valid @PathVariable Long id, @RequestBody IdInputDto profileId) {
-//        RecordDto edittedRecordDto = recordService.assignCharacter(id, profileId);
-//        return ResponseEntity.ok(edittedRecordDto);
-//    }
-
 }

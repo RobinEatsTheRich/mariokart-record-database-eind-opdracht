@@ -1,10 +1,12 @@
 package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.CourseDto;
+import Robin.MariokartBackend.dtos.KartPartDto;
 import Robin.MariokartBackend.inputDtos.CourseInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Course;
 import Robin.MariokartBackend.model.Course;
+import Robin.MariokartBackend.model.KartPart;
 import Robin.MariokartBackend.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
@@ -35,34 +37,21 @@ public class CourseService {
     }
 
     public CourseDto getCourse(Long id){
-        Optional<Course> CourseOptional = courseRepos.findById(id);
-        if (CourseOptional.isPresent()) {
-            Course Course = CourseOptional.get();
-            return dtoFromCourse(Course);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
+        return dtoFromCourse(courseFromId(id));
     }
 
     public CourseDto addCourse(CourseInputDto dto){
-        Course Course = CourseFromDto(dto);
+        Course Course = courseFromDto(dto);
         courseRepos.save(Course);
         return dtoFromCourse(Course);
     }
 
     public CourseDto editCourse(Long id, CourseInputDto dto){
-        Optional<Course> CourseOptional = courseRepos.findById(id);
-        if (CourseOptional.isPresent()) {
-            Course OgCourse = CourseOptional.get();
-            Course Course = CourseFromDto(dto);
-            Course.setId(OgCourse.getId());
-
-            courseRepos.save(Course);
-
-            return dtoFromCourse(Course);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
+        CourseDto result;
+        Course course = courseFromDto(dto);
+        courseRepos.save(course);
+        result = dtoFromCourse(courseFromId(id));
+        return result;
     }
 
     public void deleteCourse(Long id){
@@ -70,7 +59,7 @@ public class CourseService {
         if (CourseOptional.isPresent()) {
             courseRepos.deleteById(id);
         } else {
-            throw new RecordNotFoundException("ID cannot be found");
+            throw new RecordNotFoundException("The course corresponding to ID:"+id+" could not be found in the database");
         }
     }
 
@@ -91,6 +80,8 @@ public class CourseService {
         Optional<Course> optionalCourse = courseRepos.findById(id);
         if (optionalCourse.isPresent()){
             result = optionalCourse.get();
+        } else {
+            throw new RecordNotFoundException("The course corresponding to ID:"+id+" could not be found in the database");
         }
         return result;
     }
@@ -104,7 +95,7 @@ public class CourseService {
         return dto;
     }
 
-    public Course CourseFromDto (CourseInputDto dto) {
+    public Course courseFromDto (CourseInputDto dto) {
         Course course = new Course();
         course.setId(dto.getId());
         course.setName(dto.getName());

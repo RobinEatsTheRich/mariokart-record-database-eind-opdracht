@@ -52,13 +52,6 @@ public class CourseController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCourse(@PathVariable Long id){
         courseService.deleteCourse(id);
-        return new ResponseEntity<>("TV succesfully deleted", HttpStatus.OK);
+        return new ResponseEntity<>("Course "+id+" succesfully deleted!", HttpStatus.OK);
     }
-
-//    @PutMapping("/{id}/remote_controller")
-//    public ResponseEntity<CourseDto> assignRemoteControllerToCourse(@PathVariable Long id, @RequestBody IdInputDto inputDto) {
-//        CourseDto edittedCourseDto = courseService.assignRemoteControllerToCourse(id, inputDto.id);
-//        return ResponseEntity.ok(edittedCourseDto);
-//    }
-
 }

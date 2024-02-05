@@ -1,9 +1,11 @@
 package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.CharacterDto;
+import Robin.MariokartBackend.dtos.ProfileDto;
 import Robin.MariokartBackend.inputDtos.CharacterInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Character;
+import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.repository.CharacterRepository;
 import org.springframework.stereotype.Service;
 
@@ -34,13 +36,7 @@ public class CharacterService {
     }
 
     public CharacterDto getCharacter(Long id){
-        Optional<Character> characterOptional = characterRepos.findById(id);
-        if (characterOptional.isPresent()) {
-            Character character = characterOptional.get();
-            return dtoFromCharacter(character);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
+        return dtoFromCharacter(characterFromId(id));
     }
 
     public CharacterDto addCharacter(CharacterInputDto dto){
@@ -50,18 +46,11 @@ public class CharacterService {
     }
 
     public CharacterDto editCharacter(Long id, CharacterInputDto dto){
-        Optional<Character> characterOptional = characterRepos.findById(id);
-        if (characterOptional.isPresent()) {
-            Character ogCharacter = characterOptional.get();
-            Character character = characterFromDto(dto);
-            character.setId(ogCharacter.getId());
-
-            characterRepos.save(character);
-
-            return dtoFromCharacter(character);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
+        CharacterDto result;
+        Character character = characterFromDto(dto);
+        characterRepos.save(character);
+        result = dtoFromCharacter(characterFromId(id));
+        return result;
     }
 
     public void deleteCharacter(Long id){
@@ -69,7 +58,7 @@ public class CharacterService {
         if (characterOptional.isPresent()) {
             characterRepos.deleteById(id);
         } else {
-            throw new RecordNotFoundException("ID cannot be found");
+            throw new RecordNotFoundException("The character corresponding to ID:"+id+" could not be found in the database");
         }
     }
 
@@ -90,6 +79,8 @@ public class CharacterService {
         Optional<Character> optionalCharacter = characterRepos.findById(id);
         if (optionalCharacter.isPresent()){
             result = optionalCharacter.get();
+        } else {
+            throw new RecordNotFoundException("The character corresponding to ID:"+id+" could not be found in the database");
         }
         return result;
     }

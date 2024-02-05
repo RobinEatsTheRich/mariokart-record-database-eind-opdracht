@@ -52,13 +52,6 @@ public class KartPartController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteKartPart(@PathVariable Long id){
         kartPartService.deleteKartPart(id);
-        return new ResponseEntity<>("TV succesfully deleted", HttpStatus.OK);
+        return new ResponseEntity<>("KartPart "+id+" succesfully deleted!", HttpStatus.OK);
     }
-
-//    @PutMapping("/{id}/remote_controller")
-//    public ResponseEntity<KartPartDto> assignRemoteControllerToKartPart(@PathVariable Long id, @RequestBody IdInputDto inputDto) {
-//        KartPartDto edittedKartPartDto = kartPartService.assignRemoteControllerToKartPart(id, inputDto.id);
-//        return ResponseEntity.ok(edittedKartPartDto);
-//    }
-
 }

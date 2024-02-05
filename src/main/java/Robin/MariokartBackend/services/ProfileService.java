@@ -11,6 +11,7 @@ import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.model.User;
 import Robin.MariokartBackend.repository.ProfileRepository;
 import Robin.MariokartBackend.repository.RecordRepository;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,62 +43,55 @@ public class ProfileService {
         return profileDtoList;
     }
 
-    public ProfileDto getProfile(Long id){
-        Optional<Profile> profileOptional = profileRepos.findById(id);
-        if (profileOptional.isPresent()) {
-            Profile profile = profileOptional.get();
-            return dtoFromProfile(profile);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
+    public ProfileDto getProfile(String username){
+        return dtoFromProfile(profileFromName(username));
     }
 
-    public ProfileDto addProfile(ProfileInputDto dto){
+    public ProfileDto createProfile(String username, User user){
+        Profile profile = new Profile(username, user);
+        profileRepos.save(profile);
+        return dtoFromProfile(profileFromName(username));
+    }
+
+    public ProfileDto editProfile(String username, ProfileInputDto dto){
+        ProfileDto result;
         Profile profile = profileFromDto(dto);
         profileRepos.save(profile);
-        return dtoFromProfile(profile);
+        result = dtoFromProfile(profileFromName(username));
+        return result;
     }
-
-    public ProfileDto editProfile(Long id, ProfileInputDto dto){
-        Optional<Profile> profileOptional = profileRepos.findById(id);
+    public void deleteProfile(String username){
+        Optional<Profile> profileOptional = profileRepos.findById(username);
         if (profileOptional.isPresent()) {
-            Profile ogProfile = profileOptional.get();
-            Profile profile = profileFromDto(dto);
-            profile.setId(ogProfile.getId());
-
-            profileRepos.save(profile);
-
-            return dtoFromProfile(profile);
+            profileRepos.deleteById(username);
         } else {
-            throw new RecordNotFoundException("ID cannot be found");
-        }
-    }
-    public void deleteProfile(Long id){
-        Optional<Profile> profileOptional = profileRepos.findById(id);
-        if (profileOptional.isPresent()) {
-            profileRepos.deleteById(id);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
+            throw new RecordNotFoundException("The profile belonging to "+username+" could not be found in the database");
         }
     }
 
-    public ProfileDto assignRecord(Long userId, IdInputDto profileId){
-        Optional<Profile> profileOptional = profileRepos.findById(userId);
-        Optional<Record> recordOptional = recordRepos.findById(profileId.id);
-        if (recordOptional.isPresent() && profileOptional.isPresent()) {
-            Record record = recordOptional.get();
-            Profile profile = profileOptional.get();
-            record.setProfile(profile);
-            recordRepos.save(record);
+    public ProfileDto assignRecord(String username, Long recordId){
+        Record record = recordService.recordFromId(recordId);
+        Profile profile = profileFromName(username);
+        record.setProfile(profile);
+        recordRepos.save(record);
+        record = recordService.recordFromId(recordId);
+        List<Record> recordList = profile.getRecords();
+        recordList.add(record);
+        profile.setRecords(recordList);
+        profileRepos.save(profile);
+        return dtoFromProfile(profileFromName(username));
+    }
 
-            List<Record> recordList = profile.getRecords();
-            recordList.add(record);
-            profile.setRecords(recordList);
-            profileRepos.save(profile);
-            return dtoFromProfile(profile);
-        } else {
-            throw new RecordNotFoundException("ID cannot be found");
+    public Profile profileFromName(String username){
+        Profile result;
+        Optional<Profile> profileOptional = profileRepos.findById(username);
+        if (profileOptional.isPresent())
+        {
+            result = profileOptional.get();
+        } else{
+            throw new RecordNotFoundException("The profile belonging to "+username+" could not be found in the database");
         }
+        return result;
     }
 
     public List<RecordDto> dtoListfromRecordList(List<Record> recordList){
@@ -113,10 +107,7 @@ public class ProfileService {
 
     public ProfileDto dtoFromProfile(Profile profile) {
         ProfileDto dto = new ProfileDto();
-        dto.setId(profile.getId());
-        if (profile.getUser() != null) {
-            dto.setUserName(profile.getUser().getUsername());
-        }
+        dto.setUserName(profile.getUserName());
         if (profile.getRecords() != null){
             dto.setRecords(dtoListfromRecordList(profile.getRecords()));
         }
@@ -126,7 +117,6 @@ public class ProfileService {
 
     public Profile profileFromDto (ProfileInputDto dto) {
         Profile profile = new Profile();
-        profile.setId(dto.getId());
         profile.setNintendoCode(dto.getNintendoCode());
         return profile;
     }
