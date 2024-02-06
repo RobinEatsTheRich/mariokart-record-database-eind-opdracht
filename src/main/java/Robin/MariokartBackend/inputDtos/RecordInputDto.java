@@ -1,0 +1,95 @@
+package Robin.MariokartBackend.inputDtos;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.Getter;
+
+
+@Getter
+public class RecordInputDto {
+
+    private Long id;
+    @PositiveOrZero
+    private float totalTime;
+    @PositiveOrZero
+    private float lap1;
+    @PositiveOrZero
+    private float lap2;
+    @PositiveOrZero
+    private float lap3;
+    @PositiveOrZero
+    private float lap4;
+    @PositiveOrZero
+    private float lap5;
+    @PositiveOrZero
+    private float lap6;
+    @PositiveOrZero
+    private float lap7;
+    private boolean is200CC;
+    //private byte[] recording;
+    private String courseName;
+    private String characterName;
+    private String bodyName;
+    private String wheelsName;
+    private String gliderName;
+
+    public RecordInputDto(float totalTime,
+                          float lap1,
+                          float lap2,
+                          float lap3,
+                          boolean is200CC,
+                          String courseName,
+                          String characterName,
+                          String bodyName,
+                          String wheelsName,
+                          String gliderName) {
+        this.totalTime = totalTime;
+        this.lap1 = lap1;
+        this.lap2 = lap2;
+        this.lap3 = lap3;
+        this.is200CC = is200CC;
+        this.courseName = courseName;
+        this.characterName = characterName;
+        this.bodyName = bodyName;
+        this.wheelsName = wheelsName;
+        this.gliderName = gliderName;
+    }
+    public RecordInputDto(float totalTime,
+                          float lap1,
+                          float lap2,
+                          float lap3,
+                          float lap4,
+                          float lap5,
+                          float lap6,
+                          float lap7,
+                          boolean is200CC,
+                          String courseName,
+                          String characterName,
+                          String bodyName,
+                          String wheelsName,
+                          String gliderName) {
+        this.totalTime = totalTime;
+        this.lap1 = lap1;
+        this.lap2 = lap2;
+        this.lap3 = lap3;
+        this.lap4 = lap4;
+        this.lap5 = lap5;
+        this.lap6 = lap6;
+        this.lap7 = lap7;
+        this.is200CC = is200CC;
+        this.courseName = courseName;
+        this.characterName = characterName;
+        this.bodyName = bodyName;
+        this.wheelsName = wheelsName;
+        this.gliderName = gliderName;
+    }
+
+    public RecordInputDto() {
+    }
+
+    public boolean isIs200CC() {
+        return is200CC;
+    }
+
+    public void setIs200CC(boolean is200CC) {
+        this.is200CC = is200CC;
+    }
+}
