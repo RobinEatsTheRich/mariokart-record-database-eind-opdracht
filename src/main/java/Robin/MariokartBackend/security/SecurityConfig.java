@@ -46,15 +46,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
             return new MyUserDetailsService(this.userRepository);
         }
 
+
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             http
                     .authorizeHttpRequests(auth -> auth
                             .requestMatchers(HttpMethod.POST, "/users").permitAll()
                             .requestMatchers(HttpMethod.POST, "/auth").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/profiles").permitAll()
                             .requestMatchers(HttpMethod.GET, "/records").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/profiles").permitAll()
                             .requestMatchers(HttpMethod.POST, "/profiles").authenticated()
+                            .requestMatchers(HttpMethod.PUT, "/profiles").authenticated()
+                            .requestMatchers(HttpMethod.PUT, "/profiles/assign_record/").permitAll()
                             .requestMatchers(HttpMethod.POST, "/records").authenticated()
                             .requestMatchers(HttpMethod.GET, "/recordingData").authenticated()
                             .requestMatchers(HttpMethod.POST,"/kartParts","/characters","/courses").hasRole("ADMIN")
@@ -69,6 +72,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
             return http.build();
         }
+
+
     }
 
 
