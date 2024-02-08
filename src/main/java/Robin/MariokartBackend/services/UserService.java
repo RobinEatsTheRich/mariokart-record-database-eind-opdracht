@@ -2,6 +2,7 @@ package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.UserDto;
 import Robin.MariokartBackend.enumerations.UserRole;
+import Robin.MariokartBackend.exceptions.ForbiddenException;
 import Robin.MariokartBackend.inputDtos.IdInputDto;
 import Robin.MariokartBackend.inputDtos.UserInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
@@ -9,6 +10,8 @@ import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.model.User;
 import Robin.MariokartBackend.repository.ProfileRepository;
 import Robin.MariokartBackend.repository.UserRepository;
+import Robin.MariokartBackend.security.MyUserDetails;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,18 +35,23 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<UserDto> getAllUsers(){
+    public List<String> getAllUsers(){
         List<User> userList = userRepos.findAll();
-        List<UserDto> userDtoList = new ArrayList<>();
-        for(User User : userList)
+        List<String> usernamesList = new ArrayList<>();
+        for(User user : userList)
         {
-            userDtoList.add(dtoFromUser(User));
+            usernamesList.add(user.getUsername());
         }
-        return userDtoList;
+        return usernamesList;
     }
 
-    public UserDto getUser(String username){
-        UserDto result= dtoFromUser(userFromName(username));
+    public UserDto getUser(MyUserDetails myUserDetails, String username){
+        UserDto result;
+        if (!username.equals(myUserDetails.getUsername())){
+            throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
+        }
+        result= dtoFromUser(userFromName(username));
+
         return result;
     }
 
@@ -60,8 +68,12 @@ public class UserService {
 
     public UserDto editUser(String username, UserInputDto dto){
         UserDto result;
-        User user = userFromDto(dto);
-        userRepos.save(user);
+        User oldUser = userFromName(username);
+        if (dto.getUsername() != oldUser.getUsername()){
+            throw new RecordNotFoundException("Username cannot be changed, this is the profile ID");
+        }
+        User newUser = userFromDto(dto);
+        userRepos.save(newUser);
         result = dtoFromUser(userFromName(username));
         return result;
     }

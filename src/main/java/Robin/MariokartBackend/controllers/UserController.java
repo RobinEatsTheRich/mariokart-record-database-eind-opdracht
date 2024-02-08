@@ -4,15 +4,19 @@ import Robin.MariokartBackend.dtos.ProfileDto;
 import Robin.MariokartBackend.dtos.UserDto;
 import Robin.MariokartBackend.inputDtos.IdInputDto;
 import Robin.MariokartBackend.inputDtos.UserInputDto;
+import Robin.MariokartBackend.security.MyUserDetails;
 import Robin.MariokartBackend.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RequestMapping("/users")
@@ -22,15 +26,14 @@ public class UserController {
     @Autowired
     private UserService userService;
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<UserDto> userDtoList;
-        userDtoList = userService.getAllUsers();
-        return ResponseEntity.ok(userDtoList);
+    public ResponseEntity<List<String>> getAllUsers() {
+        List<String> usernameList = userService.getAllUsers();
+        return ResponseEntity.ok(usernameList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable String id) {
-        return ResponseEntity.ok(userService.getUser(id));
+    public ResponseEntity<UserDto> getUser(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable String id){
+        return ResponseEntity.ok(userService.getUser(myUserDetails, id));
     }
 
     @PostMapping
