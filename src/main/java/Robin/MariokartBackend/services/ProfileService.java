@@ -55,8 +55,9 @@ public class ProfileService {
 
     public ProfileDto editProfile(String username, ProfileInputDto dto){
         ProfileDto result;
-        Profile profile = profileFromDto(dto);
-        profileRepos.save(profile);
+        Profile oldProfile = profileFromName(username);
+        oldProfile.setNintendoCode(dto.getNintendoCode());
+        profileRepos.save(oldProfile);
         result = dtoFromProfile(profileFromName(username));
         return result;
     }
@@ -97,8 +98,8 @@ public class ProfileService {
     public List<RecordDto> dtoListfromRecordList(List<Record> recordList){
         List<RecordDto> recordDtoList = new ArrayList<>();
         if (recordList != null && !recordList.isEmpty()) {
-            for (int i = 0; i == recordList.size(); i++) {
-                    RecordDto recordDto = recordService.dtoFromRecord(recordList.get(i));
+            for (Record record : recordList) {
+                    RecordDto recordDto = recordService.dtoFromRecord(record);
                     recordDtoList.add(recordDto);
             }
         }
