@@ -19,6 +19,14 @@ public class Profile {
     @Column(name = "nintendo_code")
     private String nintendoCode;
 
+    @ManyToMany
+    @JoinTable(
+            name = "rival1_rival2",
+            joinColumns = @JoinColumn(name = "rival1_id"),
+            inverseJoinColumns = @JoinColumn(name = "rival2_id")
+    )
+    private List<Profile> rivals;
+
     public Profile(String userName,User user,List<Record> records, String nintendoCode) {
         this.userName = userName;
         this.user = user;
