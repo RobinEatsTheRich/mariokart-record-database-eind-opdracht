@@ -20,7 +20,7 @@ public class RecordingUtil {
         deflater.finish();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] temp = new byte[240 * 1024];
+        byte[] temp = new byte[2400 * 1024];
         try {
             while (!deflater.finished()){
                 int size = deflater.deflate(temp);
@@ -37,7 +37,7 @@ public class RecordingUtil {
         Inflater inflater = new Inflater();
         inflater.setInput(data);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] temp = new byte[240 * 1040];
+        byte[] temp = new byte[2400 * 1040];
         try{
             while (!inflater.finished()){
                 int count = inflater.inflate(temp);

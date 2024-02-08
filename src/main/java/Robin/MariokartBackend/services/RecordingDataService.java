@@ -5,6 +5,7 @@ import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.model.RecordingData;
 import Robin.MariokartBackend.repository.RecordRepository;
 import Robin.MariokartBackend.repository.RecordingDataRepository;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,11 +16,13 @@ import java.util.Optional;
 public class RecordingDataService {
     private final RecordingDataRepository recordingDataRepository;
     private final RecordRepository recordRepository;
+    private final RecordService recordService;
 
 
-    public RecordingDataService(RecordingDataRepository recordingDataRepository, RecordRepository recordRepository) {
+    public RecordingDataService(RecordingDataRepository recordingDataRepository, RecordRepository recordRepository, RecordService recordService) {
         this.recordingDataRepository = recordingDataRepository;
         this.recordRepository = recordRepository;
+        this.recordService = recordService;
     }
 
     public String uploadRecording(MultipartFile multipartFile, Long recordId) throws IOException {
@@ -41,14 +44,11 @@ public class RecordingDataService {
         return savedRecording.getName();
     }
 
-    public byte[] downloadRecording(Long recordId) throws IOException {
-        Optional<Record> optionalRecord = recordRepository.findById(recordId);
-        Record record = new Record();
-        if (optionalRecord.isPresent()){
-            record = optionalRecord.get();
-        }
-
+    public RecordingData downloadRecording(Long recordId){
+        Record record = recordService.recordFromId(recordId);
+        Optional<RecordingData> optionalRecordingData = recordingDataRepository.findById(record.getRecordingData().getId());
+        MediaType mediaType = MediaType.valueOf((optionalRecordingData.get().getType()));
         RecordingData recordingData = record.getRecordingData();
-        return RecordingUtil.decompressRecording(recordingData.getRecordingData());
+        return  recordingData;
     }
 }

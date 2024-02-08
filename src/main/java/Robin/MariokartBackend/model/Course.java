@@ -19,12 +19,20 @@ public class Course {
     @OneToMany
     private List<Record> records;
 
-    public Course(Long id, String name, String imgLink, List<Record> records) {
+    public Course(Long id, String name, String imgLink) {
         this.id = id;
         this.name = name;
-        this.imgLink = getImgLink();
+        this.imgLink = imgLink;
     }
 
     public Course() {
+    }
+
+    public List<Record> getRecords() {
+        return records;
+    }
+
+    public void setRecords(List<Record> records) {
+        this.records = records;
     }
 }

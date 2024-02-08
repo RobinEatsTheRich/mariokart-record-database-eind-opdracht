@@ -1,5 +1,6 @@
 package Robin.MariokartBackend.controllers;
 
+import Robin.MariokartBackend.RecordingUtil;
 import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.model.RecordingData;
 import Robin.MariokartBackend.model.User;
@@ -38,16 +39,9 @@ public class RecordingDataController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> downloadRecording(@PathVariable("id") Long recordId) throws IOException {
-        byte[] recording = recordingDataService.downloadRecording(recordId);
-
-        Optional<Record> optionalRecord = recordRepository.findById(recordId);
-        Record record = new Record();
-        if (optionalRecord.isPresent()){
-            record = optionalRecord.get();
-        }
-        Optional<RecordingData> optionalRecordingData = recordingDataRepository.findById(record.getRecordingData().getId());
-        MediaType mediaType = MediaType.valueOf(optionalRecordingData.get().getType());
-        return ResponseEntity.ok().contentType(mediaType).body(recording);
+        RecordingData recordingData = recordingDataService.downloadRecording(recordId);
+        byte[] recording = RecordingUtil.decompressRecording(recordingData.getRecordingData());
+        return ResponseEntity.ok().contentType(MediaType.valueOf(recordingData.getType())).body(recording);
 
 
     }

@@ -23,8 +23,9 @@ public class Record {
     private float lap7;
     @Column(name = "is_200CC")
     private boolean is200CC;
-    @Column(name = "course_id")
-    private Long courseId;
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
     @Column(name = "character_id")
     private Long characterId;
     @Column(name = "body_id")
@@ -45,7 +46,7 @@ public class Record {
                   float lap2,
                   float lap3,
                   boolean is200CC,
-                  Long courseId,
+                  Course course,
                   Long characterId,
                   Long bodyId,
                   Long wheelsId,
@@ -56,7 +57,7 @@ public class Record {
         this.lap2 = lap2;
         this.lap3 = lap3;
         this.is200CC = is200CC;
-        this.courseId = courseId;
+        this.course = course;
         this.characterId = characterId;
         this.bodyId = bodyId;
         this.wheelsId = wheelsId;
@@ -73,7 +74,7 @@ public class Record {
                   float lap6,
                   float lap7,
                   boolean is200CC,
-                  Long courseId,
+                  Course course,
                   Long characterId,
                   Long bodyId,
                   Long wheelsId,
@@ -89,7 +90,7 @@ public class Record {
         this.lap6 = lap6;
         this.lap7 = lap7;
         this.is200CC = is200CC;
-        this.courseId = courseId;
+        this.course = course;
         this.characterId = characterId;
         this.bodyId = bodyId;
         this.wheelsId = wheelsId;

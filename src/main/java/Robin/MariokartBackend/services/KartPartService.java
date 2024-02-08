@@ -91,6 +91,7 @@ public class KartPartService {
         dto.setId(kartPart.getId());
         dto.setName(kartPart.getName());
         dto.setImgLink(kartPart.getImgLink());
+        dto.setPartType(kartPart.getPartType());
 
         return dto;
     }

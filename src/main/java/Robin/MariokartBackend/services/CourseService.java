@@ -1,13 +1,14 @@
 package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.CourseDto;
-import Robin.MariokartBackend.dtos.KartPartDto;
+import Robin.MariokartBackend.dtos.CourseDtoForRecord;
 import Robin.MariokartBackend.inputDtos.CourseInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Course;
-import Robin.MariokartBackend.model.Course;
-import Robin.MariokartBackend.model.KartPart;
+import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.repository.CourseRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,10 +20,12 @@ public class CourseService {
 
 
     private final CourseRepository courseRepos;
+    private final RecordService recordService;
 
-
-    public CourseService(CourseRepository courseRepos) {
+    @Autowired
+    public CourseService(@Lazy RecordService recordService, CourseRepository courseRepos) {
         this.courseRepos = courseRepos;
+        this.recordService = recordService;
     }
 
 
@@ -63,6 +66,14 @@ public class CourseService {
         }
     }
 
+    public CourseDto assignRecord(Course course, Record record){
+        List<Record> recordList = course.getRecords();
+        recordList.add(record);
+        course.setRecords(recordList);
+        courseRepos.save(course);
+        return dtoFromCourse(courseFromId(course.getId()));
+    }
+
     public Long courseIdFromName(String name){
         Long result = 0l;
         List<Course> courseList = courseRepos.findAll();
@@ -76,7 +87,7 @@ public class CourseService {
         return result;
     }
     public Course courseFromId(Long id){
-        Course result = new Course();
+        Course result;
         Optional<Course> optionalCourse = courseRepos.findById(id);
         if (optionalCourse.isPresent()){
             result = optionalCourse.get();
@@ -86,12 +97,20 @@ public class CourseService {
         return result;
     }
 
+    public CourseDtoForRecord dtoForRecordFromCourse(Course course) {
+        CourseDtoForRecord dto = new CourseDtoForRecord();
+        dto.setId(course.getId());
+        dto.setName(course.getName());
+        dto.setImgLink(course.getImgLink());
+        return dto;
+    }
+
     public CourseDto dtoFromCourse(Course course) {
         CourseDto dto = new CourseDto();
         dto.setId(course.getId());
         dto.setName(course.getName());
         dto.setImgLink(course.getImgLink());
-
+        dto.setRecords(recordService.dtoForCoursesListfromRecordList(course.getRecords()));
         return dto;
     }
 

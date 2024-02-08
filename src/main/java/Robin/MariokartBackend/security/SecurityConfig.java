@@ -56,6 +56,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                             .requestMatchers(HttpMethod.PUT, "/users/{id}","/profiles/{id}","/records/{id}").authenticated()
                             .requestMatchers(HttpMethod.DELETE, "/users/{id}","/profiles/{id}","/records/{id}").authenticated()
                             .requestMatchers(HttpMethod.PUT, "/profiles/assign_record/{id}").authenticated()
+                            .requestMatchers(HttpMethod.PUT, "/profiles/add_rival/{id}").authenticated()
+                            .requestMatchers(HttpMethod.PUT, "/profiles/remove_rival/{id}").authenticated()
                             .requestMatchers(HttpMethod.GET, "/recordingData").authenticated()
                             .requestMatchers(HttpMethod.POST,"/kartParts","/characters","/courses").hasRole("ADMIN")
                             .requestMatchers(HttpMethod.PUT,"/kartParts","/characters","/courses").hasRole("ADMIN")

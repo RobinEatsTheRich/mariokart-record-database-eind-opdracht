@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RecordDto {
+public class RecordDtoForCourse {
     private Long id;
     private String totalTime;
     private String lap1;
@@ -17,12 +17,11 @@ public class RecordDto {
     private String lap7;
     private boolean is200CC;
     private CharacterDto character;
-    private CourseDtoForRecord course;
+    private CourseDto course;
     private KartPartDto body;
     private KartPartDto wheels;
     private KartPartDto glider;
     private String recordHolder;
-
     public boolean isIs200CC() {
         return is200CC;
     }
@@ -31,3 +30,4 @@ public class RecordDto {
         this.is200CC = is200CC;
     }
 }
+
