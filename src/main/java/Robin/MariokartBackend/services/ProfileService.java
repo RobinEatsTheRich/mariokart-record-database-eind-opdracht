@@ -95,30 +95,13 @@ public class ProfileService {
         return result;
     }
 
-    public List<RecordDto> dtoListfromRecordList(List<Record> recordList){
-        List<RecordDto> recordDtoList = new ArrayList<>();
-        if (recordList != null && !recordList.isEmpty()) {
-            for (Record record : recordList) {
-                    RecordDto recordDto = recordService.dtoFromRecord(record);
-                    recordDtoList.add(recordDto);
-            }
-        }
-        return recordDtoList;
-    }
-
     public ProfileDto dtoFromProfile(Profile profile) {
         ProfileDto dto = new ProfileDto();
         dto.setUserName(profile.getUserName());
         if (profile.getRecords() != null){
-            dto.setRecords(dtoListfromRecordList(profile.getRecords()));
+            dto.setRecords(recordService.dtoListfromRecordList(profile.getRecords()));
         }
         dto.setNintendoCode(profile.getNintendoCode());
         return dto;
-    }
-
-    public Profile profileFromDto (ProfileInputDto dto) {
-        Profile profile = new Profile();
-        profile.setNintendoCode(dto.getNintendoCode());
-        return profile;
     }
 }

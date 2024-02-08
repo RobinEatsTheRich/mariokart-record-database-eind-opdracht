@@ -1,11 +1,13 @@
 package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.RecordDto;
+import Robin.MariokartBackend.dtos.RecordDtoForCourse;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,22 +22,23 @@ public class RecordService {
     private final RecordRepository recordRepos;
     private final CharacterRepository characterRepos;
     private final CharacterService characterService;
-    private final CourseRepository repository;
+    private final CourseRepository courseRepos;
     private final CourseService courseService;
     private final KartPartRepository kartPartRepos;
     private final KartPartService kartpartService;
 
+    @Autowired
     public RecordService(RecordRepository recordRepos,
                          CharacterRepository characterRepos,
                          CharacterService characterService,
-                         CourseRepository repository,
+                         CourseRepository courseRepos,
                          CourseService courseService,
                          KartPartRepository kartPartRepos,
                          KartPartService kartpartService) {
         this.recordRepos = recordRepos;
         this.characterRepos = characterRepos;
         this.characterService = characterService;
-        this.repository = repository;
+        this.courseRepos = courseRepos;
         this.courseService = courseService;
         this.kartPartRepos = kartPartRepos;
         this.kartpartService = kartpartService;
@@ -59,6 +62,7 @@ public class RecordService {
     public RecordDto createRecord(RecordInputDto dto){
         Record record = recordFromDto(dto);
         recordRepos.save(record);
+        courseService.assignRecord(record.getCourse(),recordFromId(record.getId()));
         return dtoFromRecord(record);
     }
 
@@ -89,6 +93,27 @@ public class RecordService {
         return result;
     }
 
+    public List<RecordDto> dtoListfromRecordList(List<Record> recordList){
+        List<RecordDto> recordDtoList = new ArrayList<>();
+        if (recordList != null && !recordList.isEmpty()) {
+            for (Record record : recordList) {
+                RecordDto recordDto = dtoFromRecord(record);
+                recordDtoList.add(recordDto);
+            }
+        }
+        return recordDtoList;
+    }
+    public List<RecordDtoForCourse> dtoForCoursesListfromRecordList(List<Record> recordList){
+        List<RecordDtoForCourse> recordDtoList = new ArrayList<>();
+        if (recordList != null && !recordList.isEmpty()) {
+            for (Record record : recordList) {
+                RecordDtoForCourse recordDto = dtoForCoursesFromRecord(record);
+                recordDtoList.add(recordDto);
+            }
+        }
+        return recordDtoList;
+    }
+
     public Record recordFromId(Long id){
         Record result;
         Optional<Record> recordOptional = recordRepos.findById(id);
@@ -99,6 +124,53 @@ public class RecordService {
             throw new RecordNotFoundException("The record corresponding to ID:"+id+" could not be found in the database");
         }
         return result;
+    }
+
+    public RecordDtoForCourse dtoForCoursesFromRecord(Record record) {
+        RecordDtoForCourse dto = new RecordDtoForCourse();
+        dto.setId(record.getId());
+        dto.setTotalTime(stringFromTimefloat(record.getTotalTime()));
+        dto.setLap1(stringFromTimefloat(record.getLap1()));
+        dto.setLap2(stringFromTimefloat(record.getLap2()));
+        dto.setLap3(stringFromTimefloat(record.getLap3()));
+        if (record.getLap4() > 0){
+            dto.setLap4(stringFromTimefloat(record.getLap4()));
+        }
+        if (record.getLap5() > 0){
+            dto.setLap5(stringFromTimefloat(record.getLap5()));
+        }
+        if (record.getLap6() > 0){
+            dto.setLap6(stringFromTimefloat(record.getLap6()));
+        }
+        if (record.getLap7() > 0){
+            dto.setLap7(stringFromTimefloat(record.getLap7()));
+        }
+        dto.setIs200CC(record.isIs200CC());
+        if (record.getCharacterId() != null){
+            dto.setCharacter(
+                    characterService.dtoFromCharacter(characterService.characterFromId(record.getCharacterId()))
+            );
+        }
+        if (record.getBodyId() != null){
+            dto.setBody(
+                    kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getBodyId()))
+            );
+        }
+        if (record.getWheelsId() != null){
+            dto.setWheels(
+                    kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getWheelsId()))
+            );
+        }
+        if (record.getGliderId() != null){
+            dto.setGlider(
+                    kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getGliderId()))
+            );
+        }
+        if (record.getProfile() != null && record.getProfile().getUser() != null){
+            dto.setRecordHolder(record.getProfile().getUser().getUsername());
+        }
+
+        return dto;
     }
 
     public RecordDto dtoFromRecord(Record record) {
@@ -121,15 +193,15 @@ public class RecordService {
             dto.setLap7(stringFromTimefloat(record.getLap7()));
         }
         dto.setIs200CC(record.isIs200CC());
-//        dto.setKart(record.getKart());
         if (record.getCharacterId() != null){
             dto.setCharacter(
                     characterService.dtoFromCharacter(characterService.characterFromId(record.getCharacterId()))
             );
         }
-        if (record.getCourseId() != null){
+        if (record.getCourse() != null){
             dto.setCourse(
-                    courseService.dtoFromCourse(courseService.courseFromId(record.getCourseId()))
+                    courseService.dtoForRecordFromCourse(courseService.courseFromId(record.getCourse().getId()))
+
             );
         }
         if (record.getBodyId() != null){
@@ -175,7 +247,7 @@ public class RecordService {
         }
         record.setIs200CC(dto.isIs200CC());
         record.setCharacterId(characterService.characterIdFromName(dto.getCharacterName()));
-        record.setCourseId(courseService.courseIdFromName(dto.getCourseName()));
+        record.setCourse(courseRepos.getReferenceById(courseService.courseIdFromName(dto.getCourseName())));
         record.setBodyId(kartpartService.kartPartIdFromName(dto.getBodyName()));
         record.setWheelsId(kartpartService.kartPartIdFromName(dto.getWheelsName()));
         record.setGliderId(kartpartService.kartPartIdFromName(dto.getGliderName()));
