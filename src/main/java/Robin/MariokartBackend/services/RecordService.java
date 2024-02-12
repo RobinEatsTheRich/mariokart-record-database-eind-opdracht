@@ -4,11 +4,9 @@ import Robin.MariokartBackend.dtos.RecordDto;
 import Robin.MariokartBackend.dtos.RecordDtoForCourse;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
-import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

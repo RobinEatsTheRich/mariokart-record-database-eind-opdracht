@@ -3,15 +3,12 @@ package Robin.MariokartBackend.services;
 import Robin.MariokartBackend.dtos.UserDto;
 import Robin.MariokartBackend.enumerations.UserRole;
 import Robin.MariokartBackend.exceptions.ForbiddenException;
-import Robin.MariokartBackend.inputDtos.IdInputDto;
 import Robin.MariokartBackend.inputDtos.UserInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
-import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.model.User;
 import Robin.MariokartBackend.repository.ProfileRepository;
 import Robin.MariokartBackend.repository.UserRepository;
 import Robin.MariokartBackend.security.MyUserDetails;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
