@@ -5,6 +5,7 @@ import Robin.MariokartBackend.dtos.ProfileDto;
 import Robin.MariokartBackend.inputDtos.CharacterInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Character;
+import Robin.MariokartBackend.model.KartPart;
 import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.repository.CharacterRepository;
 import org.springframework.stereotype.Service;
@@ -46,11 +47,13 @@ public class CharacterService {
     }
 
     public CharacterDto editCharacter(Long id, CharacterInputDto dto){
-        CharacterDto result;
-        Character character = characterFromDto(dto);
-        characterRepos.save(character);
-        result = dtoFromCharacter(characterFromId(id));
-        return result;
+        Character oldCharacter = characterFromId(id);
+        Character newCharacter = characterFromDto(dto);
+        if (newCharacter.getId() != oldCharacter.getId()){
+            newCharacter.setId(id);
+        }
+        characterRepos.save(newCharacter);
+        return dtoFromCharacter(newCharacter);
     }
 
     public void deleteCharacter(Long id){
@@ -75,7 +78,7 @@ public class CharacterService {
         return result;
     }
     public Character characterFromId(Long id){
-        Character result = new Character();
+        Character result;
         Optional<Character> optionalCharacter = characterRepos.findById(id);
         if (optionalCharacter.isPresent()){
             result = optionalCharacter.get();

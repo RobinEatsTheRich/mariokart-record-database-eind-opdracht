@@ -7,6 +7,7 @@ import Robin.MariokartBackend.dtos.RecordDto;
 import Robin.MariokartBackend.enumerations.PartType;
 import Robin.MariokartBackend.inputDtos.ProfileInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
+import Robin.MariokartBackend.inputDtos.UserInputDto;
 import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.model.User;
@@ -53,16 +54,14 @@ public class ProfileService {
     public ProfileDto createProfile(String username, User user){
         Profile profile = new Profile(username, user);
         profileRepos.save(profile);
-        return dtoFromProfile(profileFromName(username));
+        return dtoFromProfile(profile);
     }
 
     public ProfileDto editProfile(String username, ProfileInputDto dto){
-        ProfileDto result;
         Profile oldProfile = profileFromName(username);
-        oldProfile.setNintendoCode(dto.getNintendoCode());
-        profileRepos.save(oldProfile);
-        result = dtoFromProfile(profileFromName(username));
-        return result;
+        Profile newProfile = profileFromDto(dto);
+        oldProfile.setNintendoCode(newProfile.getNintendoCode());
+        return dtoFromProfile(newProfile);
     }
     public void deleteProfile(String username){
         Optional<Profile> profileOptional = profileRepos.findById(username);
@@ -83,7 +82,7 @@ public class ProfileService {
         recordList.add(record);
         profile.setRecords(recordList);
         profileRepos.save(profile);
-        return dtoFromProfile(profileFromName(username));
+        return dtoFromProfile(profile);
     }
 
     public ProfileDto addRival(String myName, String theirName){
@@ -97,9 +96,7 @@ public class ProfileService {
         them.setRivals(theirRivals);
         profileRepos.save(me);
         profileRepos.save(them);
-        me = profileFromName(myName);
-        ProfileDto result = dtoFromProfile(me);
-        return result;
+        return dtoFromProfile(me);
     }
     public ProfileDto removeRival(String myName, String theirName){
         Profile me = profileFromName(myName);
@@ -112,9 +109,7 @@ public class ProfileService {
         them.setRivals(theirRivals);
         profileRepos.save(me);
         profileRepos.save(them);
-        me = profileFromName(myName);
-        ProfileDto result = dtoFromProfile(me);
-        return result;
+        return dtoFromProfile(me);
     }
     public CharacterDto getFavoriteCharacter(List<RecordDto> recordList){
         List<Long> allCharacterId = new ArrayList<Long>();
@@ -188,5 +183,11 @@ public class ProfileService {
         }
         dto.setNintendoCode(profile.getNintendoCode());
         return dto;
+    }
+
+    public Profile profileFromDto (ProfileInputDto dto) {
+        Profile profile = new Profile();
+        profile.setNintendoCode(dto.getNintendoCode());
+        return profile;
     }
 }

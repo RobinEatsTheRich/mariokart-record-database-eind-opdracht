@@ -5,6 +5,7 @@ import Robin.MariokartBackend.dtos.CourseDtoForRecord;
 import Robin.MariokartBackend.inputDtos.CourseInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Course;
+import Robin.MariokartBackend.model.KartPart;
 import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,11 +51,13 @@ public class CourseService {
     }
 
     public CourseDto editCourse(Long id, CourseInputDto dto){
-        CourseDto result;
-        Course course = courseFromDto(dto);
-        courseRepos.save(course);
-        result = dtoFromCourse(courseFromId(id));
-        return result;
+        Course oldCourse = courseFromId(id);
+        Course newCourse = courseFromDto(dto);
+        if (newCourse.getId() != oldCourse.getId()){
+            newCourse.setId(id);
+        }
+        courseRepos.save(newCourse);
+        return dtoFromCourse(newCourse);
     }
 
     public void deleteCourse(Long id){
@@ -71,7 +74,7 @@ public class CourseService {
         recordList.add(record);
         course.setRecords(recordList);
         courseRepos.save(course);
-        return dtoFromCourse(courseFromId(course.getId()));
+        return dtoFromCourse(course);
     }
 
     public Long courseIdFromName(String name){

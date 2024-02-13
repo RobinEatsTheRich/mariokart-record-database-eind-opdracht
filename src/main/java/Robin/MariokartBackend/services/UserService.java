@@ -53,26 +53,28 @@ public class UserService {
     }
 
     public UserDto createUser(UserInputDto dto){
+        Optional<User> userOptional = userRepos.findById(dto.getUsername());
+        if (userOptional.isPresent())
+        {
+            throw new ForbiddenException("The username "+dto.getUsername()+" is no longer available, pick a different username.");
+        }
         User user = userFromDto(dto);
         userRepos.save(user);
-        user = userFromName(user.getUsername());
         profileService.createProfile(user.getUsername(),user);
         user.setProfile(profileService.profileFromName(user.getUsername()));
         userRepos.save(user);
 
-        return dtoFromUser(userFromName(user.getUsername()));
+        return dtoFromUser(user);
     }
 
     public UserDto editUser(String username, UserInputDto dto){
-        UserDto result;
         User oldUser = userFromName(username);
-        if (dto.getUsername() != oldUser.getUsername()){
-            throw new RecordNotFoundException("Username cannot be changed, this is the profile ID");
-        }
         User newUser = userFromDto(dto);
+        if (newUser.getUsername() != oldUser.getUsername()){
+            throw new RecordNotFoundException("Username cannot be changed, this is your ID");
+        }
         userRepos.save(newUser);
-        result = dtoFromUser(userFromName(username));
-        return result;
+        return dtoFromUser(newUser);
     }
 
     public void deleteUser(String username){

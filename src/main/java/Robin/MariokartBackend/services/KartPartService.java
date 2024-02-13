@@ -1,12 +1,10 @@
 package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.KartPartDto;
-import Robin.MariokartBackend.dtos.ProfileDto;
 import Robin.MariokartBackend.inputDtos.KartPartInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.KartPart;
-import Robin.MariokartBackend.model.KartPart;
-import Robin.MariokartBackend.model.Profile;
+import Robin.MariokartBackend.model.User;
 import Robin.MariokartBackend.repository.KartPartRepository;
 import org.springframework.stereotype.Service;
 
@@ -47,11 +45,13 @@ public class KartPartService {
     }
 
     public KartPartDto editKartPart(Long id, KartPartInputDto dto){
-        KartPartDto result;
-        KartPart kartPart = kartPartFromDto(dto);
-        kartPartRepos.save(kartPart);
-        result = dtoFromKartPart(kartPartFromId(id));
-        return result;
+        KartPart oldKartPart = kartPartFromId(id);
+        KartPart newKartPart = kartPartFromDto(dto);
+        if (newKartPart.getId() != oldKartPart.getId()){
+            newKartPart.setId(id);
+        }
+        kartPartRepos.save(newKartPart);
+        return dtoFromKartPart(newKartPart);
     }
 
     public void deleteKartPart(Long id){
@@ -76,7 +76,7 @@ public class KartPartService {
         return result;
     }
     public KartPart kartPartFromId(Long id){
-        KartPart result = new KartPart();
+        KartPart result;
         Optional<KartPart> optionalKartPart = kartPartRepos.findById(id);
         if (optionalKartPart.isPresent()){
             result = optionalKartPart.get();

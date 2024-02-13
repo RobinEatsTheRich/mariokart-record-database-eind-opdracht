@@ -5,6 +5,7 @@ import Robin.MariokartBackend.dtos.RecordDtoForCourse;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Record;
+import Robin.MariokartBackend.model.User;
 import Robin.MariokartBackend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,16 +61,18 @@ public class RecordService {
     public RecordDto createRecord(RecordInputDto dto){
         Record record = recordFromDto(dto);
         recordRepos.save(record);
-        courseService.assignRecord(record.getCourse(),recordFromId(record.getId()));
+        courseService.assignRecord(record.getCourse(),record));
         return dtoFromRecord(record);
     }
 
     public RecordDto editRecord(Long id, RecordInputDto dto){
-        RecordDto result;
-        Record record = recordFromId(id);
-        recordRepos.save(record);
-        result = dtoFromRecord(recordFromId(id));
-        return result;
+        Record oldRecord = recordFromId(id);
+        Record newRecord = recordFromDto(dto);
+        if (newRecord.getId() != null){
+            newRecord.setId(oldRecord.getId());
+        }
+        recordRepos.save(newRecord);
+        return dtoFromRecord(newRecord);
     }
 
     public void deleteRecord(Long id){
