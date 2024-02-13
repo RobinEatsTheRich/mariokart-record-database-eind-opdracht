@@ -67,7 +67,11 @@ public class UserService {
         return dtoFromUser(user);
     }
 
-    public UserDto editUser(String username, UserInputDto dto){
+    public UserDto editUser(MyUserDetails myUserDetails, String username, UserInputDto dto){
+        if (myUserDetails.getUsername() != username ||
+                myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+            throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
+        }
         User oldUser = userFromName(username);
         User newUser = userFromDto(dto);
         if (newUser.getUsername() != oldUser.getUsername()){
@@ -77,14 +81,14 @@ public class UserService {
         return dtoFromUser(newUser);
     }
 
-    public void deleteUser(String username){
-        profileService.deleteProfile(username);
+    public void deleteUser(MyUserDetails myUserDetails, String username){
         Optional<User> userOptional = userRepos.findById(username);
-        if (userOptional.isPresent()) {
-            userRepos.deleteById(username);
-        } else {
-            throw new RecordNotFoundException("User "+username+" could not be found in the database");
+        if (!userOptional.isPresent() || myUserDetails.getUsername() != username ||
+                myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+            throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
         }
+        profileService.deleteProfile(myUserDetails, username);
+        userRepos.deleteById(username);
     }
 
     public static List<UserRole> userRoleFromName(List<String> stringList){
@@ -114,9 +118,7 @@ public class UserService {
         dto.setPassword(user.getPassword());
         dto.setEmail(user.getEmail());
         dto.setUserRoles(user.getUserRoles());
-        if (user.getProfile() != null){
-            dto.setProfile(profileService.dtoFromProfile(user.getProfile()));
-        }
+        dto.setProfile(profileService.dtoFromProfile(user.getProfile()));
         return dto;
     }
 

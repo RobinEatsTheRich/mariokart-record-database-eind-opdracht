@@ -47,11 +47,8 @@ public class CharacterService {
     }
 
     public CharacterDto editCharacter(Long id, CharacterInputDto dto){
-        Character oldCharacter = characterFromId(id);
         Character newCharacter = characterFromDto(dto);
-        if (newCharacter.getId() != oldCharacter.getId()){
-            newCharacter.setId(id);
-        }
+        newCharacter.setId(id);
         characterRepos.save(newCharacter);
         return dtoFromCharacter(newCharacter);
     }

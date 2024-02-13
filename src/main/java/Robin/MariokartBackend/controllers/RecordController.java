@@ -6,6 +6,7 @@ import Robin.MariokartBackend.dtos.UserDto;
 import Robin.MariokartBackend.inputDtos.IdInputDto;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
 import Robin.MariokartBackend.model.RecordingData;
+import Robin.MariokartBackend.security.MyUserDetails;
 import Robin.MariokartBackend.services.RecordService;
 import Robin.MariokartBackend.services.RecordingDataService;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -53,14 +55,14 @@ public class RecordController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RecordDto> updateRecord(@Valid @PathVariable Long id, @RequestBody RecordInputDto inputDto) {
-        RecordDto edittedRecordDto = recordService.editRecord(id, inputDto);
+    public ResponseEntity<RecordDto> updateRecord(@Valid @AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id, @RequestBody RecordInputDto inputDto) {
+        RecordDto edittedRecordDto = recordService.editRecord(myUserDetails, id, inputDto);
         return ResponseEntity.ok(edittedRecordDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteRecord(@PathVariable Long id){
-        recordService.deleteRecord(id);
+    public ResponseEntity<String> deleteRecord(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id){
+        recordService.deleteRecord(myUserDetails, id);
         return new ResponseEntity<>("Record "+id+" succesfully deleted!", HttpStatus.OK);
     }
     @PutMapping("/{id}/recording")

@@ -48,14 +48,14 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@Valid @PathVariable String id, @RequestBody UserInputDto inputDto) {
-        UserDto edittedUserDto = userService.editUser(id, inputDto);
+    public ResponseEntity<UserDto> updateUser(@Valid @AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable String id, @RequestBody UserInputDto inputDto) {
+        UserDto edittedUserDto = userService.editUser(myUserDetails, id, inputDto);
         return ResponseEntity.ok(edittedUserDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable String id){
-        userService.deleteUser(id);
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable String id){
+        userService.deleteUser(myUserDetails, id);
         return new ResponseEntity<>("User "+id+" succesfully deleted!", HttpStatus.OK);
     }
 }

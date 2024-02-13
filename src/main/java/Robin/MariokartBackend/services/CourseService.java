@@ -51,11 +51,8 @@ public class CourseService {
     }
 
     public CourseDto editCourse(Long id, CourseInputDto dto){
-        Course oldCourse = courseFromId(id);
         Course newCourse = courseFromDto(dto);
-        if (newCourse.getId() != oldCourse.getId()){
-            newCourse.setId(id);
-        }
+        newCourse.setId(id);
         courseRepos.save(newCourse);
         return dtoFromCourse(newCourse);
     }

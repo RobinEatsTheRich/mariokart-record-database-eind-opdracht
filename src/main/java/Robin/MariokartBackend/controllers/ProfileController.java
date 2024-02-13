@@ -38,12 +38,12 @@ public class ProfileController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProfileDto> updateProfile(@Valid @PathVariable String id, @RequestBody ProfileInputDto inputDto) {
-        ProfileDto edittedProfileDto = profileService.editProfile(id, inputDto);
+    public ResponseEntity<ProfileDto> updateProfile(@Valid @AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable String id, @RequestBody ProfileInputDto inputDto) {
+        ProfileDto edittedProfileDto = profileService.editProfile(myUserDetails, id, inputDto);
         return ResponseEntity.ok(edittedProfileDto);
     }
     @PutMapping("/assign_record/{id}")
-    public ResponseEntity<ProfileDto> assignProfile(@Valid @AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
+    public ResponseEntity<ProfileDto> assignRecord(@Valid @AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
         ProfileDto edittedProfileDto = profileService.assignRecord(myUserDetails.getUsername(), id);
         return ResponseEntity.ok(edittedProfileDto);
     }

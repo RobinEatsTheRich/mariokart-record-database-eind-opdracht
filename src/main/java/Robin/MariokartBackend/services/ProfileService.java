@@ -5,6 +5,8 @@ import Robin.MariokartBackend.dtos.KartPartDto;
 import Robin.MariokartBackend.dtos.ProfileDto;
 import Robin.MariokartBackend.dtos.RecordDto;
 import Robin.MariokartBackend.enumerations.PartType;
+import Robin.MariokartBackend.enumerations.UserRole;
+import Robin.MariokartBackend.exceptions.ForbiddenException;
 import Robin.MariokartBackend.inputDtos.ProfileInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.inputDtos.UserInputDto;
@@ -13,6 +15,7 @@ import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.model.User;
 import Robin.MariokartBackend.repository.ProfileRepository;
 import Robin.MariokartBackend.repository.RecordRepository;
+import Robin.MariokartBackend.security.MyUserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -57,19 +60,23 @@ public class ProfileService {
         return dtoFromProfile(profile);
     }
 
-    public ProfileDto editProfile(String username, ProfileInputDto dto){
+    public ProfileDto editProfile(MyUserDetails myUserDetails, String username, ProfileInputDto dto){
+        if (myUserDetails.getUsername() != username ||
+                myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+            throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
+        }
         Profile oldProfile = profileFromName(username);
         Profile newProfile = profileFromDto(dto);
+        newProfile.setUserName(username);
         oldProfile.setNintendoCode(newProfile.getNintendoCode());
         return dtoFromProfile(newProfile);
     }
-    public void deleteProfile(String username){
-        Optional<Profile> profileOptional = profileRepos.findById(username);
-        if (profileOptional.isPresent()) {
-            profileRepos.deleteById(username);
-        } else {
-            throw new RecordNotFoundException("The profile belonging to "+username+" could not be found in the database");
+    public void deleteProfile(MyUserDetails myUserDetails, String username){
+        if (myUserDetails.getUsername() != username ||
+                myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+            throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
         }
+        profileRepos.deleteById(username);
     }
 
     public ProfileDto assignRecord(String username, Long recordId){

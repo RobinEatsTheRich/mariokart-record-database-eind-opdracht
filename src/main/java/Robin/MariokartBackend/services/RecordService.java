@@ -2,12 +2,14 @@ package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.RecordDto;
 import Robin.MariokartBackend.dtos.RecordDtoForCourse;
+import Robin.MariokartBackend.enumerations.UserRole;
+import Robin.MariokartBackend.exceptions.ForbiddenException;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.model.User;
 import Robin.MariokartBackend.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import Robin.MariokartBackend.security.MyUserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,27 +21,20 @@ public class RecordService {
 
 
     private final RecordRepository recordRepos;
-    private final CharacterRepository characterRepos;
     private final CharacterService characterService;
     private final CourseRepository courseRepos;
     private final CourseService courseService;
-    private final KartPartRepository kartPartRepos;
     private final KartPartService kartpartService;
 
-    @Autowired
     public RecordService(RecordRepository recordRepos,
-                         CharacterRepository characterRepos,
                          CharacterService characterService,
                          CourseRepository courseRepos,
                          CourseService courseService,
-                         KartPartRepository kartPartRepos,
                          KartPartService kartpartService) {
         this.recordRepos = recordRepos;
-        this.characterRepos = characterRepos;
         this.characterService = characterService;
         this.courseRepos = courseRepos;
         this.courseService = courseService;
-        this.kartPartRepos = kartPartRepos;
         this.kartpartService = kartpartService;
     }
 
@@ -61,27 +56,31 @@ public class RecordService {
     public RecordDto createRecord(RecordInputDto dto){
         Record record = recordFromDto(dto);
         recordRepos.save(record);
-        courseService.assignRecord(record.getCourse(),record));
+        courseService.assignRecord(record.getCourse(),record);
         return dtoFromRecord(record);
     }
 
-    public RecordDto editRecord(Long id, RecordInputDto dto){
+    public RecordDto editRecord(MyUserDetails myUserDetails, Long id, RecordInputDto dto){
         Record oldRecord = recordFromId(id);
-        Record newRecord = recordFromDto(dto);
-        if (newRecord.getId() != null){
-            newRecord.setId(oldRecord.getId());
+        String recordOwner = oldRecord.getProfile().getUserName();
+        if (myUserDetails.getUsername() != recordOwner ||
+                myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+            throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+recordOwner+".");
         }
+        Record newRecord = recordFromDto(dto);
+        newRecord.setId(oldRecord.getId());
         recordRepos.save(newRecord);
         return dtoFromRecord(newRecord);
     }
 
-    public void deleteRecord(Long id){
-        Optional<Record> recordOptional = recordRepos.findById(id);
-        if (recordOptional.isPresent()) {
-            recordRepos.deleteById(id);
-        } else {
-            throw new RecordNotFoundException("The record corresponding to ID:"+id+" could not be found in the database");
+    public void deleteRecord(MyUserDetails myUserDetails, Long id){
+        Record record = recordFromId(id);
+        String recordOwner = record.getProfile().getUserName();
+        if (myUserDetails.getUsername() != recordOwner ||
+                myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+            throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+recordOwner+".");
         }
+        recordRepos.deleteById(id);
     }
 
     public String stringFromTimefloat(float f){

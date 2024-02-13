@@ -45,11 +45,8 @@ public class KartPartService {
     }
 
     public KartPartDto editKartPart(Long id, KartPartInputDto dto){
-        KartPart oldKartPart = kartPartFromId(id);
         KartPart newKartPart = kartPartFromDto(dto);
-        if (newKartPart.getId() != oldKartPart.getId()){
-            newKartPart.setId(id);
-        }
+        newKartPart.setId(id);
         kartPartRepos.save(newKartPart);
         return dtoFromKartPart(newKartPart);
     }
