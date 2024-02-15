@@ -9,7 +9,6 @@ import Robin.MariokartBackend.enumerations.UserRole;
 import Robin.MariokartBackend.exceptions.ForbiddenException;
 import Robin.MariokartBackend.inputDtos.ProfileInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
-import Robin.MariokartBackend.inputDtos.UserInputDto;
 import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.model.User;

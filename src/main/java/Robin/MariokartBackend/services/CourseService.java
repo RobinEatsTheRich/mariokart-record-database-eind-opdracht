@@ -5,7 +5,6 @@ import Robin.MariokartBackend.dtos.CourseDtoForRecord;
 import Robin.MariokartBackend.inputDtos.CourseInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Course;
-import Robin.MariokartBackend.model.KartPart;
 import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;

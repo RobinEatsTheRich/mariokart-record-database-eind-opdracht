@@ -99,7 +99,6 @@ public class UserService {
         return result;
     }
 
-
     public User userFromName(String username){
         User result;
         Optional<User> userOptional = userRepos.findById(username);

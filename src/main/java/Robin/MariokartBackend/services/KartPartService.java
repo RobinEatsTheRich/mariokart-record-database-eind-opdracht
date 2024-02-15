@@ -4,7 +4,6 @@ import Robin.MariokartBackend.dtos.KartPartDto;
 import Robin.MariokartBackend.inputDtos.KartPartInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.KartPart;
-import Robin.MariokartBackend.model.User;
 import Robin.MariokartBackend.repository.KartPartRepository;
 import org.springframework.stereotype.Service;
 

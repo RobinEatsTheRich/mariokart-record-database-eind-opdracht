@@ -520,5 +520,18 @@ public class recordServiceTest {
         assertEquals(4.35118f, result);
     }
 
+    @Test
+    void testRecordFromDtoForbidden(){
+        //Arrange
+        RecordInputDto inputDto = new RecordInputDto(1.35118f,0.33148f,0.31074f,0.30896f,false,"Baby Park","Mario","Standard Kart","Standard Kart","Standard Kart");
+
+
+        //Act
+        ForbiddenException forbiddenException = assertThrows(ForbiddenException.class, () -> recordService.recordFromDto(inputDto));
+
+        //Assert
+        assertEquals("Baby Park has 7 laps, not 3", forbiddenException.getMessage());
+    }
+
 }
 

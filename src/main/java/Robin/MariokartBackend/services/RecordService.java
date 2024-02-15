@@ -7,7 +7,6 @@ import Robin.MariokartBackend.exceptions.ForbiddenException;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Record;
-import Robin.MariokartBackend.model.User;
 import Robin.MariokartBackend.repository.*;
 import Robin.MariokartBackend.security.MyUserDetails;
 import org.springframework.stereotype.Service;
@@ -217,6 +216,9 @@ public class RecordService {
         record.setBodyId(kartpartService.kartPartIdFromName(dto.getBodyName()));
         record.setWheelsId(kartpartService.kartPartIdFromName(dto.getWheelsName()));
         record.setGliderId(kartpartService.kartPartIdFromName(dto.getGliderName()));
+        if (dto.getCourseName().equals("Baby Park") && dto.getLap7() <= 0){
+            throw new ForbiddenException("Baby Park has 7 laps, not 3");
+        }
         return record;
     }
 }
