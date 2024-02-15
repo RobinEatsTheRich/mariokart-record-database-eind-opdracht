@@ -1,8 +1,6 @@
 package Robin.MariokartBackend.controllers;
 
-import Robin.MariokartBackend.dtos.ProfileDto;
 import Robin.MariokartBackend.dtos.UserDto;
-import Robin.MariokartBackend.inputDtos.IdInputDto;
 import Robin.MariokartBackend.inputDtos.UserInputDto;
 import Robin.MariokartBackend.security.MyUserDetails;
 import Robin.MariokartBackend.services.UserService;
@@ -11,12 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RequestMapping("/users")

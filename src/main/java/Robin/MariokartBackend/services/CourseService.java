@@ -110,7 +110,7 @@ public class CourseService {
         dto.setId(course.getId());
         dto.setName(course.getName());
         dto.setImgLink(course.getImgLink());
-        dto.setRecords(recordService.dtoForCoursesListfromRecordList(course.getRecords()));
+        dto.setRecords(recordService.dtoForCoursesListFromRecordList(course.getRecords()));
         return dto;
     }
 

@@ -179,7 +179,7 @@ public class ProfileService {
         ProfileDto dto = new ProfileDto();
         dto.setUserName(profile.getUserName());
         if (profile.getRecords() != null){
-            dto.setRecords(recordService.dtoListfromRecordList(profile.getRecords()));
+            dto.setRecords(recordService.dtoListFromRecordList(profile.getRecords()));
             dto.setFavoriteCharacter(getFavoriteCharacter(dto.getRecords()));
             dto.setFavoriteBody(getFavoriteKartPart(dto.getRecords(),PartType.BODY));
             dto.setFavoriteWheels(getFavoriteKartPart(dto.getRecords(),PartType.WHEELS));

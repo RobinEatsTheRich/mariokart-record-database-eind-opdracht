@@ -1,30 +1,26 @@
 package Robin.group.MariokartBackend;
 
-import Robin.MariokartBackend.dtos.CharacterDto;
-import Robin.MariokartBackend.dtos.CourseDtoForRecord;
-import Robin.MariokartBackend.dtos.KartPartDto;
-import Robin.MariokartBackend.dtos.RecordDto;
+import Robin.MariokartBackend.dtos.*;
 import Robin.MariokartBackend.enumerations.PartType;
 import Robin.MariokartBackend.enumerations.UserRole;
 import Robin.MariokartBackend.exceptions.ForbiddenException;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
-import Robin.MariokartBackend.inputDtos.UserInputDto;
 import Robin.MariokartBackend.model.*;
 import Robin.MariokartBackend.model.Character;
 import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.repository.*;
 import Robin.MariokartBackend.security.MyUserDetails;
 import Robin.MariokartBackend.services.*;
-import org.checkerframework.checker.units.qual.C;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +28,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class recordServiceTest {
@@ -48,43 +45,95 @@ public class recordServiceTest {
     @InjectMocks
     private RecordService recordService;
 
-    User bonobo = new User("Bonobo","P3achL0ver","oldTreeByWater@hotmail.com");
-    User bowser = new User("-<xX_KingKoopa_Xx>-","P3achL0ver64","kingK@shellspin.com");
-    User miyamoto = new User("Miyamoto_Shigeru","marioGuy#1","Shigeru_Miyamoto@Nintendo.com");
-    Record bonobosRecord = new Record(1L, 1.35118f,0.33148f,0.31074f,0.30896f,false,1001L,1001L,2001L,3001L);
-    Record bowsersRecord = new Record(2L,1.65118f,0.43148f,0.41074f,0.40896f,false,1001L,1001L,2001L,3001L);
-    Record miyamotosRecord = new Record(3L,0.95118f,0.23148f,0.21074f,0.20896f,false,1001L,1001L,2001L,3001L);
+    User bonobo = new User();
+    User bowser = new User();
+    User miyamoto = new User();
+    Record bonobosRecord = new Record();
+    Record bowsersRecord = new Record();
+    Record miyamotosRecord = new Record();
     CharacterDto marioDto = new CharacterDto();
-    Character mario = new Character(1001L,"Mario","https://mario.wiki.gallery/images/thumb/d/d9/MK8_Mario_Icon.png/96px-MK8_Mario_Icon.png");
     KartPartDto standardKartDto = new KartPartDto();
-    KartPart standardKart = new KartPart(1001L,"Standard Kart","https://mario.wiki.gallery/images/thumb/0/05/StandardKartBodyMK8.png/180px-StandardKartBodyMK8.png",PartType.BODY);
     CourseDtoForRecord rainbowRoadDto = new CourseDtoForRecord();
-    Course rainbowRoad = new Course(1096L, "Wii Rainbow Road", "https://mario.wiki.gallery/images/thumb/0/0c/MK8D_Wii_Rainbow_Road_Course_Icon.png/228px-MK8D_Wii_Rainbow_Road_Course_Icon.png");
+    Course rainbowRoad = new Course();
 
 
+    @BeforeEach
+    public void create(){
 
-    public void setValues(){
+
         List<UserRole> noAdmin = new ArrayList<>();
         noAdmin.add(UserRole.USER);
         List<UserRole> admin = new ArrayList<>();
         admin.add(UserRole.USER);
         admin.add(UserRole.ADMIN);
+        bonobo.setUsername("Bonobo");
+        bonobo.setPassword("P3achL0ver");
+        bonobo.setEmail("oldTreeByWater@hotmail.com");
         bonobo.setUserRoles(noAdmin);
+
+        bowser.setUsername("-<xX_KingKoopa_Xx>-");
+        bowser.setPassword("P3achL0ver64");
+        bowser.setEmail("kingK@shellspin.com");
         bowser.setUserRoles(noAdmin);
+
+        miyamoto.setUsername("Miyamoto_Shigeru");
+        miyamoto.setPassword("marioGuy#1");
+        miyamoto.setEmail("Shigeru_Miyamoto@Nintendo.com");
         miyamoto.setUserRoles(admin);
+
+        bonobosRecord.setId(1l);
+        bonobosRecord.setTotalTime(1.35118f);
+        bonobosRecord.setLap1(0.33148f);
+        bonobosRecord.setLap2(0.31074f);
+        bonobosRecord.setLap3(0.30896f);
+        bonobosRecord.setIs200CC(false);
+        bonobosRecord.setCharacterId(1001l);
+        bonobosRecord.setBodyId(1001l);
+        bonobosRecord.setWheelsId(2001l);
+        bonobosRecord.setGliderId(3001l);
+
+        bowsersRecord.setId(2l);
+        bowsersRecord.setTotalTime(1.65118f);
+        bowsersRecord.setLap1(0.43148f);
+        bowsersRecord.setLap2(0.41074f);
+        bowsersRecord.setLap3(0.40896f);
+        bowsersRecord.setIs200CC(false);
+        bowsersRecord.setCharacterId(1001l);
+        bowsersRecord.setBodyId(1001l);
+        bowsersRecord.setWheelsId(2001l);
+        bowsersRecord.setGliderId(3001l);
+
+        miyamotosRecord.setId(3l);
+        miyamotosRecord.setTotalTime(0.95118f);
+        miyamotosRecord.setLap1(0.23148f);
+        miyamotosRecord.setLap2(0.21074f);
+        miyamotosRecord.setLap3(0.20896f);
+        miyamotosRecord.setIs200CC(false);
+        miyamotosRecord.setCharacterId(1001l);
+        miyamotosRecord.setBodyId(1001l);
+        miyamotosRecord.setWheelsId(2001l);
+        miyamotosRecord.setGliderId(3001l);
+
         marioDto.setId(1001L);
         marioDto.setName("Mario");
         marioDto.setImgLink("https://mario.wiki.gallery/images/thumb/d/d9/MK8_Mario_Icon.png/96px-MK8_Mario_Icon.png");
+
         standardKartDto.setId(1001L);
         standardKartDto.setName("Standard Kart");
         standardKartDto.setImgLink("https://mario.wiki.gallery/images/thumb/0/05/StandardKartBodyMK8.png/180px-StandardKartBodyMK8.png");
         standardKartDto.setPartType(PartType.BODY);
+
         rainbowRoadDto.setId(1097L);
         rainbowRoadDto.setName("Wii Rainbow Road");
         rainbowRoadDto.setImgLink("https://mario.wiki.gallery/images/thumb/0/0c/MK8D_Wii_Rainbow_Road_Course_Icon.png/228px-MK8D_Wii_Rainbow_Road_Course_Icon.png");
+        rainbowRoad.setId(1097L);
+        rainbowRoad.setName("Wii Rainbow Road");
+        rainbowRoad.setImgLink("https://mario.wiki.gallery/images/thumb/0/0c/MK8D_Wii_Rainbow_Road_Course_Icon.png/228px-MK8D_Wii_Rainbow_Road_Course_Icon.png");
+
         bonobosRecord.setCourse(rainbowRoad);
         bowsersRecord.setCourse(rainbowRoad);
         miyamotosRecord.setCourse(rainbowRoad);
+
         Profile bonobosProfile = new Profile("Bonobo", bonobo);
         bonobo.setProfile(bonobosProfile);
         bonobosRecord.setProfile(bonobosProfile);
@@ -95,11 +144,24 @@ public class recordServiceTest {
         miyamoto.setProfile(miyamotosProfile);
         miyamotosRecord.setProfile(miyamotosProfile);
     }
+    @AfterEach
+    public void clearUp(){
+        bonobo = null;
+        bowser = null;
+        miyamoto = null;
+        bonobosRecord = null;
+        bowsersRecord = null;
+        miyamotosRecord = null;
+        marioDto = null;
+        standardKartDto = null;
+        rainbowRoadDto = null;
+        rainbowRoad = null;
+
+    }
 
     @Test
     void testGetAllRecords(){
         //Arrange
-        setValues();
         List<Record> allRecords = new ArrayList<>();
         allRecords.add(bonobosRecord);
         allRecords.add(bowsersRecord);
@@ -110,9 +172,6 @@ public class recordServiceTest {
         Mockito
                 .when(characterService.dtoFromCharacter(characterService.characterFromId(1001L)))
                 .thenReturn(marioDto);
-        Mockito
-                .when(courseService.dtoForRecordFromCourse(courseService.courseFromId(1096L)))
-                .thenReturn(rainbowRoadDto);
         Mockito
                 .when(kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(1001L)))
                 .thenReturn(standardKartDto);
@@ -129,16 +188,12 @@ public class recordServiceTest {
     @Test
     void testGetRecord(){
         //Arrange
-        setValues();
         Mockito
                 .when(recordRepos.findById(1L))
                 .thenReturn(Optional.ofNullable(bonobosRecord));
         Mockito
                 .when(characterService.dtoFromCharacter(characterService.characterFromId(1001L)))
                 .thenReturn(marioDto);
-        Mockito
-                .when(courseService.dtoForRecordFromCourse(courseService.courseFromId(1096L)))
-                .thenReturn(rainbowRoadDto);
         Mockito
                 .when(kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(1001L)))
                 .thenReturn(standardKartDto);
@@ -154,7 +209,6 @@ public class recordServiceTest {
     @Test
     void testCreateUser(){
         //Arrange
-        setValues();
         RecordInputDto inputDto = new RecordInputDto(1.35118f,0.33148f,0.31074f,0.30896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
 
         Mockito
@@ -176,7 +230,6 @@ public class recordServiceTest {
     @Test
     void testEditRecordAllowed(){
         //Arrange
-        setValues();
         RecordInputDto inputDto = new RecordInputDto(1.15118f,0.33148f,0.31074f,0.20896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
         MyUserDetails myUserDetails = new MyUserDetails(bonobo);
         Mockito
@@ -193,7 +246,6 @@ public class recordServiceTest {
     @Test
     void testEditRecordNotPossible(){
         //Arrange
-        setValues();
         RecordInputDto inputDto = new RecordInputDto(1.15118f,0.33148f,0.31074f,0.20896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
         MyUserDetails myUserDetails = new MyUserDetails(bowser);
         Mockito
@@ -210,7 +262,6 @@ public class recordServiceTest {
     @Test
     void testEditRecordForbidden(){
         //Arrange
-        setValues();
         RecordInputDto inputDto = new RecordInputDto(4.35118f,1.53148f,1.51074f,1.50896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
         MyUserDetails myUserDetails = new MyUserDetails(bowser);
         Mockito
@@ -224,121 +275,250 @@ public class recordServiceTest {
         assertEquals("You are logged in as -<xX_KingKoopa_Xx>-, not as Miyamoto_Shigeru.", forbiddenException.getMessage());
     }
 
-////    @Test
-////    void testDeleteUserAllowed(){
-////        //Arrange
-////        setUserRole(bonobo,"USER");
-////        MyUserDetails myUserDetails = new MyUserDetails(bonobo);
-////        Profile profile = new Profile("Bonobo", bonobo);
-////        Mockito
-////                .when(userRepos.findById("Bonobo"))
-////                .thenReturn(Optional.ofNullable(bonobo));
-////        Mockito
-////                .when(profileService.profileFromName("Bonobo"))
-////                .thenReturn(profile);
-////
-////        //Act
-////        userService.deleteUser(myUserDetails,"Bonobo");
-////
-////        //Assert
-////        Mockito.verify(userRepos, Mockito.times(3)).save(Mockito.any());
-//////        Mockito.verify(userService, Mockito.times(1).{userService.deleteUser()(Mockito.any())});
-////    }
-//
-//    @Test
-//    void testDeleteUserForbidden(){
-//        //Arrange
-//        setUserRole(bowser,"USER");
-//        MyUserDetails myUserDetails = new MyUserDetails(bowser);
-//        Mockito
-//                .when(userRepos.findById("-<xX_KingKoopa_Xx>-"))
-//                .thenReturn(Optional.ofNullable(bowser));
-//
-//        //Act
-//        ForbiddenException forbiddenException = assertThrows(ForbiddenException.class, () -> userService.deleteUser(myUserDetails,"Miyamoto_Shigeru"));
-//
-//        //Assert
-//        assertEquals("You are logged in as -<xX_KingKoopa_Xx>-, not as Miyamoto_Shigeru.", forbiddenException.getMessage());
-//    }
-//
-//    @Test
-//    void testUserRoleFromName(){
-//        //Arrange
-//        List<String> stringList = new ArrayList<>();
-//        stringList.add("USER");
-//        stringList.add("ADMIN");
-//        List<UserRole> userRoleList = new ArrayList<>();
-//        userRoleList.add(UserRole.USER);
-//        userRoleList.add(UserRole.ADMIN);
-//
-//        //Act
-//        List<UserRole> result = userService.userRoleFromName(stringList);
-//
-//        //Assert
-//        assertEquals(userRoleList, result);
-//    }
-//
-//    @Test
-//    void testUserFromNameAllowed(){
-//        //Arrange
-//        Mockito
-//                .when(userRepos.findById("Bonobo"))
-//                .thenReturn(Optional.ofNullable(bonobo));
-//
-//        //Act
-//        String result = userService.userFromName("Bonobo").getPassword();
-//
-//        //Assert
-//        assertEquals("P3achL0ver", result);
-//    }
-//
-//    @Test
-//    void testUserFromNameForbidden(){
-//        //Arrange
-//        setUserRole(bowser,"USER");
-//        Mockito
-//                .when(userRepos.findById("-<X_KingKopa_Xx>-"))
-//                .thenReturn(Optional.empty());
-//
-//        //Act
-//        RecordNotFoundException recordNotFoundException = assertThrows(RecordNotFoundException.class, () -> userService.userFromName("-<X_KingKopa_Xx>-"));
-//
-//        //Assert
-//        assertEquals("User -<X_KingKopa_Xx>- could not be found in the database", recordNotFoundException.getMessage());
-//    }
-//
-//    @Test
-//    void testDtoFromUser(){
-//        //Arrange
-//        setUserRole(bonobo,"USER");
-//        Profile profile = new Profile("Bonobo",bonobo);
-//        bonobo.setProfile(profile);
-//
-//        //Act
-//        String result = userService.dtoFromUser(bonobo).getPassword();
-//
-//        //Assert
-//        assertEquals("P3achL0ver", result);
-//    }
-//
-//    @Test
-//    void testUserFromDto(){
-//        //Arrange
-//        UserInputDto userInputDto = new UserInputDto("Bonobo","P3achL0ver","oldTreeByWater@hotmail.com");
-//        List<String> userRoles = new ArrayList<>();
-//        userRoles.add("USER");
-//        userInputDto.setRoles(userRoles);
-//        Mockito
-//                .when(passwordEncoder.encode("P3achL0ver"))
-//                .thenReturn("[ENCODED]P3achL0ver[ENCODED]");
-//
-//        //Act
-//        String result = userService.userFromDto(userInputDto).getPassword();
-//
-//        //Assert
-//        assertEquals("[ENCODED]P3achL0ver[ENCODED]", result);
-//    }
+    @Test
+    void testDeleteUserAllowed(){
+        //Arrange
+        MyUserDetails myUserDetails = new MyUserDetails(bonobo);
+        Mockito
+                .when(recordRepos.findById(1l))
+                .thenReturn(Optional.ofNullable(bonobosRecord));
 
+        //Act
+        recordService.deleteRecord(myUserDetails,1l);
+
+        //Assert
+        verify(recordRepos, Mockito.times(1)).deleteById(1l);
+    }
+
+    @Test
+    void testDeleteRecordForbidden(){
+        //Arrange
+        MyUserDetails myUserDetails = new MyUserDetails(bowser);
+        Mockito
+                .when(recordRepos.findById(3l))
+                .thenReturn(Optional.ofNullable(miyamotosRecord));
+
+        //Act
+        ForbiddenException forbiddenException = assertThrows(ForbiddenException.class, () -> recordService.deleteRecord(myUserDetails,3l));
+
+        //Assert
+        assertEquals("You are logged in as -<xX_KingKoopa_Xx>-, not as Miyamoto_Shigeru.", forbiddenException.getMessage());
+    }
+
+    @Test
+    void testStringFromTimeFloat(){
+        //Act
+        String result = recordService.stringFromTimeFloat(1.41408f);
+
+        //Assert
+        assertEquals("1:41.408", result);
+    }
+
+    @Test
+    void testDtoListFromRecordListAllowed(){
+        //Arrange
+        List<Record> recordList = new ArrayList<>();
+        recordList.add(bonobosRecord);
+        recordList.add(bowsersRecord);
+        recordList.add(miyamotosRecord);
+
+
+        //Act
+        List<RecordDto> result = recordService.dtoListFromRecordList(recordList);
+
+        //Assert
+        assertEquals("1:35.118", result.get(0).getTotalTime());
+        assertEquals("1:65.118", result.get(1).getTotalTime());
+        assertEquals("0:95.118", result.get(2).getTotalTime());
+    }
+
+    @Test
+    void testDtoListFromRecordListNotAllowed(){
+        //Arrange
+        List<Record> recordList = new ArrayList<>();
+
+        //Act
+        RecordNotFoundException recordNotFoundException = assertThrows(RecordNotFoundException.class, () -> recordService.dtoListFromRecordList(recordList));
+
+        //Assert
+        assertEquals("The list of records to be converted was empty", recordNotFoundException.getMessage());
+    }
+
+    @Test
+    void testDtoForCoursesListFromRecordList(){
+        //Arrange
+        List<Record> recordList = new ArrayList<>();
+        recordList.add(bonobosRecord);
+        recordList.add(bowsersRecord);
+        recordList.add(miyamotosRecord);
+
+
+        //Act
+        List<RecordDtoForCourse> result = recordService.dtoForCoursesListFromRecordList(recordList);
+
+        //Assert
+        assertEquals("1:35.118", result.get(0).getTotalTime());
+        assertEquals("1:65.118", result.get(1).getTotalTime());
+        assertEquals("0:95.118", result.get(2).getTotalTime());
+    }
+
+    @Test
+    void testDtoForCoursesListFromRecordListNotAllowed(){
+        //Arrange
+        List<Record> recordList = new ArrayList<>();
+
+        //Act
+        RecordNotFoundException recordNotFoundException = assertThrows(RecordNotFoundException.class, () -> recordService.dtoForCoursesListFromRecordList(recordList));
+
+        //Assert
+        assertEquals("The list of records to be converted was empty", recordNotFoundException.getMessage());
+    }
+
+
+
+    @Test
+    void testRecordFromIdAllowed(){
+        //Arrange
+        Mockito
+                .when(recordRepos.findById(1l))
+                .thenReturn(Optional.ofNullable(bonobosRecord));
+
+        //Act
+        float result = recordService.recordFromId(1l).getTotalTime();
+
+        //Assert
+        assertEquals(1.35118f, result);
+    }
+    @Test
+    void testRecordFromIdNotPossible(){
+        //Arrange
+        Mockito
+                .when(recordRepos.findById(5l))
+                .thenReturn(Optional.empty());
+
+        //Act
+        RecordNotFoundException recordNotFoundException = assertThrows(RecordNotFoundException.class, () -> recordService.recordFromId(5l));
+
+        //Assert
+        assertEquals("The record corresponding to ID:5 could not be found in the database", recordNotFoundException.getMessage());
+    }
+
+    @Test
+    void testDtoForCoursesFromRecordAllowed(){
+        //Act
+        String result = recordService.dtoForCoursesFromRecord(bonobosRecord).getTotalTime();
+
+        //Assert
+        assertEquals("1:35.118", result);
+    }
+    @Test
+    void testDtoForCoursesFromRecord7Laps(){
+        //Arrange
+        bonobosRecord.setLap4(0.23190f);
+        bonobosRecord.setLap5(0.23190f);
+        bonobosRecord.setLap6(0.23190f);
+        bonobosRecord.setLap7(0.23190f);
+
+        //Act
+        String result = recordService.dtoForCoursesFromRecord(bonobosRecord).getTotalTime();
+
+        //Assert
+        assertEquals("1:35.118", result);
+    }
+    @Test
+    void testDtoForCoursesFromRecordNoProfile(){
+        //Arrange
+        bonobosRecord.setProfile(null);
+
+        //Act
+        String result = recordService.dtoForCoursesFromRecord(bonobosRecord).getTotalTime();
+
+        //Assert
+        assertEquals("1:35.118", result);
+    }
+
+    @Test
+    void testDtoForCoursesFromRecordForbidden(){
+        //Arrange
+        bonobosRecord.setLap5(0.23190f);
+        bonobosRecord.setLap6(0.23190f);
+
+        //Act
+        ForbiddenException forbiddenException = assertThrows(ForbiddenException.class, () -> recordService.dtoForCoursesFromRecord(bonobosRecord));
+
+        //Assert
+        assertEquals("Either fill in Lap 1,2&3 and leave the rest blank, or fill in all laps. No inbetweens", forbiddenException.getMessage());
+    }
+
+    @Test
+    void testDtoFromRecord(){
+        //Act
+        String result = recordService.dtoFromRecord(bonobosRecord).getTotalTime();
+
+        //Assert
+        assertEquals("1:35.118", result);
+    }
+    @Test
+    void testDtoFromRecord7Laps(){
+        //Arrange
+        bonobosRecord.setLap4(0.23190f);
+        bonobosRecord.setLap5(0.23190f);
+        bonobosRecord.setLap6(0.23190f);
+        bonobosRecord.setLap7(0.23190f);
+
+        //Act
+        String result = recordService.dtoFromRecord(bonobosRecord).getTotalTime();
+
+        //Assert
+        assertEquals("1:35.118", result);
+    }
+    @Test
+    void testDtoFromRecordNoProfile(){
+        //Arrange
+        bonobosRecord.setProfile(null);
+
+        //Act
+        String result = recordService.dtoFromRecord(bonobosRecord).getTotalTime();
+
+        //Assert
+        assertEquals("1:35.118", result);
+    }
+
+    @Test
+    void testDtoFromRecordForbidden(){
+        //Arrange
+        bonobosRecord.setLap5(0.23190f);
+        bonobosRecord.setLap6(0.23190f);
+
+        //Act
+        ForbiddenException forbiddenException = assertThrows(ForbiddenException.class, () -> recordService.dtoFromRecord(bonobosRecord));
+
+        //Assert
+        assertEquals("Either fill in Lap 1,2&3 and leave the rest blank, or fill in all laps. No inbetweens", forbiddenException.getMessage());
+    }
+
+    @Test
+    void testRecordFromDto(){
+        //Arange
+        RecordInputDto inputDto = new RecordInputDto(1.35118f,0.33148f,0.31074f,0.30896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
+
+        //Act
+        float result = recordService.recordFromDto(inputDto).getTotalTime();
+
+        //Assert
+        assertEquals(1.35118f, result);
+    }
+    @Test
+    void testRecordFromDto7Laps(){
+        //Arrange
+        RecordInputDto inputDto = new RecordInputDto(4.35118f,1.53148f,1.51074f,1.50896f,1.53148f,1.51074f,1.50896f,1.50896f,false,"Mario","Standard Kart","Standard Kart","Standard Kart");
+
+        //Act
+        float result = recordService.recordFromDto(inputDto).getTotalTime();
+
+        //Assert
+        assertEquals(4.35118f, result);
+    }
 
 }
 

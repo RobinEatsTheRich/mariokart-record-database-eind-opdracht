@@ -10,6 +10,8 @@ import Robin.MariokartBackend.repository.UserRepository;
 import Robin.MariokartBackend.security.MyUserDetails;
 import Robin.MariokartBackend.services.ProfileService;
 import Robin.MariokartBackend.services.UserService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +26,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class userServiceTest {
@@ -35,10 +38,34 @@ public class userServiceTest {
     private PasswordEncoder passwordEncoder;
     @InjectMocks
     private UserService userService;
+    User bonobo = new User();
+    User bowser = new User();
+    User miyamoto = new User();
 
-    User bonobo = new User("Bonobo","P3achL0ver","oldTreeByWater@hotmail.com");
-    User bowser = new User("-<xX_KingKoopa_Xx>-","P3achL0ver64","kingK@shellspin.com");
-    User miyamoto = new User("Miyamoto_Shigeru","marioGuy#1","Shigeru_Miyamoto@Nintendo.com");
+    @BeforeEach
+    public void create(){
+        bonobo.setUsername("Bonobo");
+        bonobo.setPassword("P3achL0ver");
+        bonobo.setEmail("oldTreeByWater@hotmail.com");
+        setUserRole(bonobo,"USER");
+
+        bowser.setUsername("-<xX_KingKoopa_Xx>-");
+        bowser.setPassword("P3achL0ver64");
+        bowser.setEmail("kingK@shellspin.com");
+        setUserRole(bowser,"USER");
+
+        miyamoto.setUsername("Miyamoto_Shigeru");
+        miyamoto.setPassword("marioGuy#1");
+        miyamoto.setEmail("Shigeru_Miyamoto@Nintendo.com");
+        setUserRole(miyamoto,"ADMIN");
+    }
+
+    @AfterEach
+    public void cleanup(){
+    bonobo = null;
+    bowser = null;
+    miyamoto = null;
+    }
 
     public void setUserRole(User user, String userRole){
         List<UserRole> noAdmin = new ArrayList<>();
@@ -55,9 +82,6 @@ public class userServiceTest {
     @Test
     void testGetAllUsers(){
         //Arrange
-        setUserRole(bonobo,"USER");
-        setUserRole(bowser,"USER");
-        setUserRole(miyamoto,"USER");
         List<User> allUsers = new ArrayList<>();
         allUsers.add(bonobo);
         allUsers.add(bowser);
@@ -78,7 +102,6 @@ public class userServiceTest {
     @Test
     void testGetUserAllowed(){
         //Arrange
-        setUserRole(bonobo,"USER");
         MyUserDetails bonoboUserDetails = new MyUserDetails(bonobo);
         Mockito
                 .when(userRepos.findById(bonobo.getUsername()))
@@ -94,8 +117,6 @@ public class userServiceTest {
     @Test
     void testGetUserForbidden(){
         //Arrange
-        setUserRole(bonobo,"USER");
-        setUserRole(bowser,"USER");
         MyUserDetails bowserUserDetails = new MyUserDetails(bowser);
 
         //Act
@@ -155,7 +176,6 @@ public class userServiceTest {
         userRoles.add("USER");
         UserInputDto userInputDto = new UserInputDto("Bonobo","4ctu4llyIpr3f3rCh3rri3sN0w","newTreeByWater@hotmail.com");
         userInputDto.setRoles(userRoles);
-        setUserRole(bonobo,"USER");
         MyUserDetails myUserDetails = new MyUserDetails(bonobo);
         Mockito
                 .when(userRepos.findById("Bonobo"))
@@ -178,7 +198,6 @@ public class userServiceTest {
         userRoles.add("USER");
         UserInputDto userInputDto = new UserInputDto("-<X_KingKopa_Xx>-","P3achL0ver64","kingK@shellspin.com");
         userInputDto.setRoles(userRoles);
-        setUserRole(bowser,"USER");
         MyUserDetails myUserDetails = new MyUserDetails(bowser);
         Mockito
                 .when(userRepos.findById("-<xX_KingKoopa_Xx>-"))
@@ -197,7 +216,6 @@ public class userServiceTest {
         userRoles.add("USER");
         UserInputDto userInputDto = new UserInputDto("stinker","BadDad#2","Shigeru_Miyamoto@smellmyfarts.com");
         userInputDto.setRoles(userRoles);
-        setUserRole(bowser,"USER");
         MyUserDetails myUserDetails = new MyUserDetails(bowser);
 
         //Act
@@ -207,31 +225,25 @@ public class userServiceTest {
         assertEquals("You are logged in as -<xX_KingKoopa_Xx>-, not as Miyamoto_Shigeru.", forbiddenException.getMessage());
     }
 
-//    @Test
-//    void testDeleteUserAllowed(){
-//        //Arrange
-//        setUserRole(bonobo,"USER");
-//        MyUserDetails myUserDetails = new MyUserDetails(bonobo);
-//        Profile profile = new Profile("Bonobo", bonobo);
-//        Mockito
-//                .when(userRepos.findById("Bonobo"))
-//                .thenReturn(Optional.ofNullable(bonobo));
-//        Mockito
-//                .when(profileService.profileFromName("Bonobo"))
-//                .thenReturn(profile);
-//
-//        //Act
-//        userService.deleteUser(myUserDetails,"Bonobo");
-//
-//        //Assert
-//        Mockito.verify(userRepos, Mockito.times(3)).save(Mockito.any());
-////        Mockito.verify(userService, Mockito.times(1).{userService.deleteUser()(Mockito.any())});
-//    }
+    @Test
+    void testDeleteUserAllowed(){
+        //Arrange
+        MyUserDetails myUserDetails = new MyUserDetails(bonobo);
+        Mockito
+                .when(userRepos.findById("Bonobo"))
+                .thenReturn(Optional.ofNullable(bonobo));
+
+        //Act
+        userService.deleteUser(myUserDetails,"Bonobo");
+
+        //Assert
+
+        verify(userRepos, Mockito.times(1)).deleteById("Bonobo");
+    }
 
     @Test
     void testDeleteUserForbidden(){
         //Arrange
-        setUserRole(bowser,"USER");
         MyUserDetails myUserDetails = new MyUserDetails(bowser);
 
         //Act
@@ -275,7 +287,6 @@ public class userServiceTest {
     @Test
     void testUserFromNameForbidden(){
         //Arrange
-        setUserRole(bowser,"USER");
         Mockito
                 .when(userRepos.findById("-<X_KingKopa_Xx>-"))
                 .thenReturn(Optional.empty());
@@ -290,7 +301,6 @@ public class userServiceTest {
     @Test
     void testDtoFromUser(){
         //Arrange
-        setUserRole(bonobo,"USER");
         Profile profile = new Profile("Bonobo",bonobo);
         bonobo.setProfile(profile);
 
@@ -306,7 +316,6 @@ public class userServiceTest {
         //Arrange
         UserInputDto userInputDto = new UserInputDto("Bonobo","P3achL0ver","oldTreeByWater@hotmail.com");
         List<String> userRoles = new ArrayList<>();
-        userRoles.add("USER");
         userInputDto.setRoles(userRoles);
         Mockito
                 .when(passwordEncoder.encode("P3achL0ver"))

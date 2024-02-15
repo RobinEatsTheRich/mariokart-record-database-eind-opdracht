@@ -83,7 +83,7 @@ public class RecordService {
         recordRepos.deleteById(id);
     }
 
-    public String stringFromTimefloat(float f){
+    public String stringFromTimeFloat(float f){
         String result = Float.toString(f);
         String substring1 = result.substring(0,1);
         String substring2 = result.substring(2,4);
@@ -93,23 +93,27 @@ public class RecordService {
         return result;
     }
 
-    public List<RecordDto> dtoListfromRecordList(List<Record> recordList){
+    public List<RecordDto> dtoListFromRecordList(List<Record> recordList){
         List<RecordDto> recordDtoList = new ArrayList<>();
         if (recordList != null && !recordList.isEmpty()) {
             for (Record record : recordList) {
                 RecordDto recordDto = dtoFromRecord(record);
                 recordDtoList.add(recordDto);
             }
+        } else {
+            throw new RecordNotFoundException("The list of records to be converted was empty");
         }
         return recordDtoList;
     }
-    public List<RecordDtoForCourse> dtoForCoursesListfromRecordList(List<Record> recordList){
+    public List<RecordDtoForCourse> dtoForCoursesListFromRecordList(List<Record> recordList){
         List<RecordDtoForCourse> recordDtoList = new ArrayList<>();
         if (recordList != null && !recordList.isEmpty()) {
             for (Record record : recordList) {
                 RecordDtoForCourse recordDto = dtoForCoursesFromRecord(record);
                 recordDtoList.add(recordDto);
             }
+        } else {
+            throw new RecordNotFoundException("The list of records to be converted was empty");
         }
         return recordDtoList;
     }
@@ -129,100 +133,68 @@ public class RecordService {
     public RecordDtoForCourse dtoForCoursesFromRecord(Record record) {
         RecordDtoForCourse dto = new RecordDtoForCourse();
         dto.setId(record.getId());
-        dto.setTotalTime(stringFromTimefloat(record.getTotalTime()));
-        dto.setLap1(stringFromTimefloat(record.getLap1()));
-        dto.setLap2(stringFromTimefloat(record.getLap2()));
-        dto.setLap3(stringFromTimefloat(record.getLap3()));
-        if (record.getLap4() > 0){
-            dto.setLap4(stringFromTimefloat(record.getLap4()));
-        }
-        if (record.getLap5() > 0){
-            dto.setLap5(stringFromTimefloat(record.getLap5()));
-        }
-        if (record.getLap6() > 0){
-            dto.setLap6(stringFromTimefloat(record.getLap6()));
-        }
-        if (record.getLap7() > 0){
-            dto.setLap7(stringFromTimefloat(record.getLap7()));
+        dto.setTotalTime(stringFromTimeFloat(record.getTotalTime()));
+        dto.setLap1(stringFromTimeFloat(record.getLap1()));
+        dto.setLap2(stringFromTimeFloat(record.getLap2()));
+        dto.setLap3(stringFromTimeFloat(record.getLap3()));
+        if (record.getLap4() > 0 && record.getLap5() > 0 && record.getLap6() > 0 && record.getLap7() > 0){
+            dto.setLap4(stringFromTimeFloat(record.getLap4()));
+            dto.setLap5(stringFromTimeFloat(record.getLap5()));
+            dto.setLap6(stringFromTimeFloat(record.getLap6()));
+            dto.setLap7(stringFromTimeFloat(record.getLap7()));
+        } else if (record.getLap4() > 0 || record.getLap5() > 0 || record.getLap6() > 0 || record.getLap7() > 0) {
+            throw new ForbiddenException("Either fill in Lap 1,2&3 and leave the rest blank, or fill in all laps. No inbetweens");
         }
         dto.setIs200CC(record.isIs200CC());
-        if (record.getCharacterId() != null){
-            dto.setCharacter(
-                    characterService.dtoFromCharacter(characterService.characterFromId(record.getCharacterId()))
-            );
-        }
-        if (record.getBodyId() != null){
-            dto.setBody(
-                    kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getBodyId()))
-            );
-        }
-        if (record.getWheelsId() != null){
-            dto.setWheels(
-                    kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getWheelsId()))
-            );
-        }
-        if (record.getGliderId() != null){
-            dto.setGlider(
-                    kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getGliderId()))
-            );
-        }
+        dto.setCharacter(
+                characterService.dtoFromCharacter(characterService.characterFromId(record.getCharacterId()))
+        );
+        dto.setBody(
+                kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getBodyId()))
+        );
+        dto.setWheels(
+                kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getWheelsId()))
+        );
+        dto.setGlider(
+                kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getGliderId()))
+        );
         if (record.getProfile() != null && record.getProfile().getUser() != null){
             dto.setRecordHolder(record.getProfile().getUser().getUsername());
         }
-
         return dto;
     }
 
     public RecordDto dtoFromRecord(Record record) {
         RecordDto dto = new RecordDto();
         dto.setId(record.getId());
-        dto.setTotalTime(stringFromTimefloat(record.getTotalTime()));
-        dto.setLap1(stringFromTimefloat(record.getLap1()));
-        dto.setLap2(stringFromTimefloat(record.getLap2()));
-        dto.setLap3(stringFromTimefloat(record.getLap3()));
-        if (record.getLap4() > 0){
-            dto.setLap4(stringFromTimefloat(record.getLap4()));
-        }
-        if (record.getLap5() > 0){
-            dto.setLap5(stringFromTimefloat(record.getLap5()));
-        }
-        if (record.getLap6() > 0){
-            dto.setLap6(stringFromTimefloat(record.getLap6()));
-        }
-        if (record.getLap7() > 0){
-            dto.setLap7(stringFromTimefloat(record.getLap7()));
+        dto.setTotalTime(stringFromTimeFloat(record.getTotalTime()));
+        dto.setLap1(stringFromTimeFloat(record.getLap1()));
+        dto.setLap2(stringFromTimeFloat(record.getLap2()));
+        dto.setLap3(stringFromTimeFloat(record.getLap3()));
+        if (record.getLap4() > 0 && record.getLap5() > 0 && record.getLap6() > 0 && record.getLap7() > 0){
+            dto.setLap4(stringFromTimeFloat(record.getLap4()));
+            dto.setLap5(stringFromTimeFloat(record.getLap5()));
+            dto.setLap6(stringFromTimeFloat(record.getLap6()));
+            dto.setLap7(stringFromTimeFloat(record.getLap7()));
+        } else if (record.getLap4() > 0 || record.getLap5() > 0 || record.getLap6() > 0 || record.getLap7() > 0) {
+            throw new ForbiddenException("Either fill in Lap 1,2&3 and leave the rest blank, or fill in all laps. No inbetweens");
         }
         dto.setIs200CC(record.isIs200CC());
-        if (record.getCharacterId() != null){
-            dto.setCharacter(
-                    characterService.dtoFromCharacter(characterService.characterFromId(record.getCharacterId()))
-            );
-        }
-        if (record.getCourse() != null){
-            dto.setCourse(
-                    courseService.dtoForRecordFromCourse(courseService.courseFromId(record.getCourse().getId()))
-
-            );
-        }
-        if (record.getBodyId() != null){
-            dto.setBody(
-                    kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getBodyId()))
-            );
-        }
-        if (record.getWheelsId() != null){
-            dto.setWheels(
-                    kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getWheelsId()))
-            );
-        }
-        if (record.getGliderId() != null){
-            dto.setGlider(
-                    kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getGliderId()))
-            );
-        }
+        dto.setCharacter(
+                characterService.dtoFromCharacter(characterService.characterFromId(record.getCharacterId()))
+        );
+        dto.setBody(
+                kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getBodyId()))
+        );
+        dto.setWheels(
+                kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getWheelsId()))
+        );
+        dto.setGlider(
+                kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getGliderId()))
+        );
         if (record.getProfile() != null && record.getProfile().getUser() != null){
             dto.setRecordHolder(record.getProfile().getUser().getUsername());
         }
-
         return dto;
     }
 
@@ -233,16 +205,10 @@ public class RecordService {
         record.setLap1(dto.getLap1());
         record.setLap2(dto.getLap2());
         record.setLap3(dto.getLap3());
-        if (dto.getLap4() > 0){
-            record.setLap4(dto.getLap4());
-        }
-        if (dto.getLap5() > 0){
-            record.setLap5(dto.getLap5());
-        }
-        if (dto.getLap6() > 0){
-            record.setLap6(dto.getLap6());
-        }
         if (dto.getLap7() > 0){
+            record.setLap4(dto.getLap4());
+            record.setLap5(dto.getLap5());
+            record.setLap6(dto.getLap6());
             record.setLap7(dto.getLap7());
         }
         record.setIs200CC(dto.isIs200CC());

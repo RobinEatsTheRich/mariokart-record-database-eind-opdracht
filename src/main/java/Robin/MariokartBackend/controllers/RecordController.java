@@ -2,8 +2,6 @@ package Robin.MariokartBackend.controllers;
 
 import Robin.MariokartBackend.RecordingUtil;
 import Robin.MariokartBackend.dtos.RecordDto;
-import Robin.MariokartBackend.dtos.UserDto;
-import Robin.MariokartBackend.inputDtos.IdInputDto;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
 import Robin.MariokartBackend.model.RecordingData;
 import Robin.MariokartBackend.security.MyUserDetails;
