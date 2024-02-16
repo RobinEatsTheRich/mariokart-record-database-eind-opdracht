@@ -50,11 +50,10 @@ public class CourseService {
     }
 
     public CourseDto editCourse(Long id, CourseInputDto dto){
-        CourseDto result;
-        Course course = courseFromDto(dto);
-        courseRepos.save(course);
-        result = dtoFromCourse(courseFromId(id));
-        return result;
+        Course newCourse = courseFromDto(dto);
+        newCourse.setId(id);
+        courseRepos.save(newCourse);
+        return dtoFromCourse(newCourse);
     }
 
     public void deleteCourse(Long id){
@@ -71,7 +70,7 @@ public class CourseService {
         recordList.add(record);
         course.setRecords(recordList);
         courseRepos.save(course);
-        return dtoFromCourse(courseFromId(course.getId()));
+        return dtoFromCourse(course);
     }
 
     public Long courseIdFromName(String name){
@@ -110,7 +109,9 @@ public class CourseService {
         dto.setId(course.getId());
         dto.setName(course.getName());
         dto.setImgLink(course.getImgLink());
-        dto.setRecords(recordService.dtoForCoursesListfromRecordList(course.getRecords()));
+        if (course.getRecords() != null){
+            dto.setRecords(recordService.dtoForCoursesListFromRecordList(course.getRecords()));
+        }
         return dto;
     }
 

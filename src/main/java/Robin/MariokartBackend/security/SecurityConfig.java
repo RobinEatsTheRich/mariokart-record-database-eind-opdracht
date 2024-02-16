@@ -51,15 +51,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             http
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers(HttpMethod.GET, "/profiles/{id}").authenticated()
-                            .requestMatchers(HttpMethod.POST, "/users/{id}","/profiles/{id}","/records/{id}").authenticated()
+                            .requestMatchers(HttpMethod.GET, "/users/{id}").authenticated()
+                            .requestMatchers(HttpMethod.POST, "/records/").authenticated()
                             .requestMatchers(HttpMethod.PUT, "/users/{id}","/profiles/{id}","/records/{id}").authenticated()
                             .requestMatchers(HttpMethod.DELETE, "/users/{id}","/profiles/{id}","/records/{id}").authenticated()
                             .requestMatchers(HttpMethod.PUT, "/profiles/assign_record/{id}").authenticated()
                             .requestMatchers(HttpMethod.PUT, "/profiles/add_rival/{id}").authenticated()
                             .requestMatchers(HttpMethod.PUT, "/profiles/remove_rival/{id}").authenticated()
-                            .requestMatchers(HttpMethod.GET, "/recordingData").authenticated()
-                            .requestMatchers(HttpMethod.POST,"/kartParts","/characters","/courses").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.POST, "/records/{id}/recording").authenticated()
+                            .requestMatchers(HttpMethod.GET, "/records/{id}/recording").authenticated()
+                            .requestMatchers(HttpMethod.POST,"/kartParts","/characters","/courses").hasAuthority("ADMIN")
                             .requestMatchers(HttpMethod.PUT,"/kartParts","/characters","/courses").hasRole("ADMIN")
                             .requestMatchers(HttpMethod.DELETE,"/kartParts","/characters","/courses").hasRole("ADMIN")
                             .requestMatchers("/**").permitAll()

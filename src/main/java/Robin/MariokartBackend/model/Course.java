@@ -11,7 +11,6 @@ import java.util.List;
 @Table(name = "courses")
 public class Course {
     @Id
-    @GeneratedValue
     private Long id;
     private String name;
     @Column(name = "img_link")

@@ -1,7 +1,6 @@
 package Robin.MariokartBackend.controllers;
 
 import Robin.MariokartBackend.dtos.CharacterDto;
-import Robin.MariokartBackend.inputDtos.IdInputDto;
 import Robin.MariokartBackend.inputDtos.CharacterInputDto;
 import Robin.MariokartBackend.services.CharacterService;
 import jakarta.validation.Valid;

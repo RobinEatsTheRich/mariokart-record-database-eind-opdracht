@@ -3,15 +3,12 @@ package Robin.MariokartBackend.services;
 import Robin.MariokartBackend.dtos.UserDto;
 import Robin.MariokartBackend.enumerations.UserRole;
 import Robin.MariokartBackend.exceptions.ForbiddenException;
-import Robin.MariokartBackend.inputDtos.IdInputDto;
 import Robin.MariokartBackend.inputDtos.UserInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
-import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.model.User;
 import Robin.MariokartBackend.repository.ProfileRepository;
 import Robin.MariokartBackend.repository.UserRepository;
 import Robin.MariokartBackend.security.MyUserDetails;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +44,8 @@ public class UserService {
 
     public UserDto getUser(MyUserDetails myUserDetails, String username){
         UserDto result;
-        if (!username.equals(myUserDetails.getUsername())){
+        if (!username.equals(myUserDetails.getUsername()) &&
+                !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
         }
         result= dtoFromUser(userFromName(username));
@@ -56,46 +54,52 @@ public class UserService {
     }
 
     public UserDto createUser(UserInputDto dto){
+        Optional<User> userOptional = userRepos.findById(dto.getUsername());
+        if (userOptional.isPresent())
+        {
+            throw new ForbiddenException("The username "+dto.getUsername()+" is no longer available, pick a different username.");
+        }
         User user = userFromDto(dto);
         userRepos.save(user);
-        user = userFromName(user.getUsername());
         profileService.createProfile(user.getUsername(),user);
         user.setProfile(profileService.profileFromName(user.getUsername()));
         userRepos.save(user);
 
-        return dtoFromUser(userFromName(user.getUsername()));
+        return dtoFromUser(user);
     }
 
-    public UserDto editUser(String username, UserInputDto dto){
-        UserDto result;
+    public UserDto editUser(MyUserDetails myUserDetails, String username, UserInputDto dto){
+        if (!myUserDetails.getUsername().equals(username) &&
+                !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+            throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
+        }
         User oldUser = userFromName(username);
-        if (dto.getUsername() != oldUser.getUsername()){
-            throw new RecordNotFoundException("Username cannot be changed, this is the profile ID");
-        }
         User newUser = userFromDto(dto);
+        if (!newUser.getUsername().equals(oldUser.getUsername())){
+            throw new RecordNotFoundException("Username cannot be changed, this is your ID");
+        }
+        newUser.setProfile(oldUser.getProfile());
         userRepos.save(newUser);
-        result = dtoFromUser(userFromName(username));
-        return result;
+        return dtoFromUser(newUser);
     }
 
-    public void deleteUser(String username){
-        profileService.deleteProfile(username);
+    public void deleteUser(MyUserDetails myUserDetails, String username){
         Optional<User> userOptional = userRepos.findById(username);
-        if (userOptional.isPresent()) {
-            userRepos.deleteById(username);
-        } else {
-            throw new RecordNotFoundException("User "+username+" could not be found in the database");
+        if (!userOptional.isPresent() || (!myUserDetails.getUsername().equals(username) &&
+                !myUserDetails.getUserRoles().contains(UserRole.ADMIN))){
+            throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
         }
+        profileService.deleteProfile(myUserDetails, username);
+        userRepos.deleteById(username);
     }
 
     public static List<UserRole> userRoleFromName(List<String> stringList){
-        List<UserRole>  result = new ArrayList<UserRole>();
+        List<UserRole>  result = new ArrayList<>();
         for (String string : stringList){
             result.add(UserRole.valueOf(string));
         }
         return result;
     }
-
 
     public User userFromName(String username){
         User result;
@@ -115,9 +119,7 @@ public class UserService {
         dto.setPassword(user.getPassword());
         dto.setEmail(user.getEmail());
         dto.setUserRoles(user.getUserRoles());
-        if (user.getProfile() != null){
-            dto.setProfile(profileService.dtoFromProfile(user.getProfile()));
-        }
+        dto.setProfile(profileService.dtoFromProfile(user.getProfile()));
         return dto;
     }
 

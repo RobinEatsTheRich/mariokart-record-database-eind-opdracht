@@ -64,8 +64,7 @@ public class Record {
         this.gliderId = gliderId;
     }
 
-    public Record(Long id,
-                  float totalTime,
+    public Record(float totalTime,
                   float lap1,
                   float lap2,
                   float lap3,
@@ -80,7 +79,6 @@ public class Record {
                   Long wheelsId,
                   Long gliderId
     ) {
-        this.id = id;
         this.totalTime = totalTime;
         this.lap1 = lap1;
         this.lap2 = lap2;
@@ -91,6 +89,29 @@ public class Record {
         this.lap7 = lap7;
         this.is200CC = is200CC;
         this.course = course;
+        this.characterId = characterId;
+        this.bodyId = bodyId;
+        this.wheelsId = wheelsId;
+        this.gliderId = gliderId;
+    }
+
+    public Record(Long id,      //Constructor for Testing
+                  float totalTime,
+                  float lap1,
+                  float lap2,
+                  float lap3,
+                  boolean is200CC,
+                  Long characterId,
+                  Long bodyId,
+                  Long wheelsId,
+                  Long gliderId
+    ) {
+        this.id = id;
+        this.totalTime = totalTime;
+        this.lap1 = lap1;
+        this.lap2 = lap2;
+        this.lap3 = lap3;
+        this.is200CC = is200CC;
         this.characterId = characterId;
         this.bodyId = bodyId;
         this.wheelsId = wheelsId;

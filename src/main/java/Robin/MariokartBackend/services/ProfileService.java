@@ -5,6 +5,8 @@ import Robin.MariokartBackend.dtos.KartPartDto;
 import Robin.MariokartBackend.dtos.ProfileDto;
 import Robin.MariokartBackend.dtos.RecordDto;
 import Robin.MariokartBackend.enumerations.PartType;
+import Robin.MariokartBackend.enumerations.UserRole;
+import Robin.MariokartBackend.exceptions.ForbiddenException;
 import Robin.MariokartBackend.inputDtos.ProfileInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Profile;
@@ -12,6 +14,7 @@ import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.model.User;
 import Robin.MariokartBackend.repository.ProfileRepository;
 import Robin.MariokartBackend.repository.RecordRepository;
+import Robin.MariokartBackend.security.MyUserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -53,29 +56,31 @@ public class ProfileService {
     public ProfileDto createProfile(String username, User user){
         Profile profile = new Profile(username, user);
         profileRepos.save(profile);
-        return dtoFromProfile(profileFromName(username));
+        return dtoFromProfile(profile);
     }
 
-    public ProfileDto editProfile(String username, ProfileInputDto dto){
-        ProfileDto result;
-        Profile oldProfile = profileFromName(username);
-        oldProfile.setNintendoCode(dto.getNintendoCode());
-        profileRepos.save(oldProfile);
-        result = dtoFromProfile(profileFromName(username));
-        return result;
-    }
-    public void deleteProfile(String username){
-        Optional<Profile> profileOptional = profileRepos.findById(username);
-        if (profileOptional.isPresent()) {
-            profileRepos.deleteById(username);
-        } else {
-            throw new RecordNotFoundException("The profile belonging to "+username+" could not be found in the database");
+    public ProfileDto editProfile(MyUserDetails myUserDetails, String username, ProfileInputDto dto){
+        if (!myUserDetails.getUsername().equals(username) &&
+                (!myUserDetails.getUserRoles().contains(UserRole.ADMIN)) && !myUserDetails.getUsername().equals(username)){
+            throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
         }
+        Profile oldProfile = profileFromName(username);
+        Profile newProfile = profileFromDto(dto);
+        newProfile.setUserName(username);
+        oldProfile.setNintendoCode(newProfile.getNintendoCode());
+        return dtoFromProfile(newProfile);
+    }
+    public void deleteProfile(MyUserDetails myUserDetails, String username){
+        if (!myUserDetails.getUsername().equals(username) &&
+                (!myUserDetails.getUserRoles().contains(UserRole.ADMIN)) && !myUserDetails.getUsername().equals(username)){
+            throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
+        }
+        profileRepos.deleteById(username);
     }
 
-    public ProfileDto assignRecord(String username, Long recordId){
+    public ProfileDto assignRecord(MyUserDetails myUserDetails, Long recordId){
         Record record = recordService.recordFromId(recordId);
-        Profile profile = profileFromName(username);
+        Profile profile = profileFromName(myUserDetails.getUsername());
         record.setProfile(profile);
         recordRepos.save(record);
         record = recordService.recordFromId(recordId);
@@ -83,11 +88,11 @@ public class ProfileService {
         recordList.add(record);
         profile.setRecords(recordList);
         profileRepos.save(profile);
-        return dtoFromProfile(profileFromName(username));
+        return dtoFromProfile(profile);
     }
 
-    public ProfileDto addRival(String myName, String theirName){
-        Profile me = profileFromName(myName);
+    public ProfileDto addRival(MyUserDetails myUserDetails, String theirName){
+        Profile me = profileFromName(myUserDetails.getUsername());
         Profile them = profileFromName(theirName);
         List<Profile> myRivals = me.getRivals();
         List<Profile> theirRivals = them.getRivals();
@@ -97,12 +102,10 @@ public class ProfileService {
         them.setRivals(theirRivals);
         profileRepos.save(me);
         profileRepos.save(them);
-        me = profileFromName(myName);
-        ProfileDto result = dtoFromProfile(me);
-        return result;
+        return dtoFromProfile(me);
     }
-    public ProfileDto removeRival(String myName, String theirName){
-        Profile me = profileFromName(myName);
+    public ProfileDto removeRival(MyUserDetails myUserDetails, String theirName){
+        Profile me = profileFromName(myUserDetails.getUsername());
         Profile them = profileFromName(theirName);
         List<Profile> myRivals = me.getRivals();
         List<Profile> theirRivals = them.getRivals();
@@ -112,9 +115,7 @@ public class ProfileService {
         them.setRivals(theirRivals);
         profileRepos.save(me);
         profileRepos.save(them);
-        me = profileFromName(myName);
-        ProfileDto result = dtoFromProfile(me);
-        return result;
+        return dtoFromProfile(me);
     }
     public CharacterDto getFavoriteCharacter(List<RecordDto> recordList){
         List<Long> allCharacterId = new ArrayList<Long>();
@@ -176,8 +177,8 @@ public class ProfileService {
     public ProfileDto dtoFromProfile(Profile profile) {
         ProfileDto dto = new ProfileDto();
         dto.setUserName(profile.getUserName());
-        if (profile.getRecords() != null){
-            dto.setRecords(recordService.dtoListfromRecordList(profile.getRecords()));
+        if (profile.getRecords() != null && !profile.getRecords().isEmpty()){
+            dto.setRecords(recordService.dtoListFromRecordList(profile.getRecords()));
             dto.setFavoriteCharacter(getFavoriteCharacter(dto.getRecords()));
             dto.setFavoriteBody(getFavoriteKartPart(dto.getRecords(),PartType.BODY));
             dto.setFavoriteWheels(getFavoriteKartPart(dto.getRecords(),PartType.WHEELS));
@@ -188,5 +189,11 @@ public class ProfileService {
         }
         dto.setNintendoCode(profile.getNintendoCode());
         return dto;
+    }
+
+    public Profile profileFromDto (ProfileInputDto dto) {
+        Profile profile = new Profile();
+        profile.setNintendoCode(dto.getNintendoCode());
+        return profile;
     }
 }

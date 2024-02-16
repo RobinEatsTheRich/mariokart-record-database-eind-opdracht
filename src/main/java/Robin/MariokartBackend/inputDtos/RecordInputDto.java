@@ -1,19 +1,23 @@
 package Robin.MariokartBackend.inputDtos;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 
 @Getter
 public class RecordInputDto {
 
     private Long id;
-    @PositiveOrZero
+    @Positive
     private float totalTime;
-    @PositiveOrZero
+    @Positive
     private float lap1;
-    @PositiveOrZero
+    @Positive
     private float lap2;
-    @PositiveOrZero
+    @Positive
     private float lap3;
     @PositiveOrZero
     private float lap4;
@@ -24,11 +28,15 @@ public class RecordInputDto {
     @PositiveOrZero
     private float lap7;
     private boolean is200CC;
-    //private byte[] recording;
+    @NotNull
     private String courseName;
+    @NotNull
     private String characterName;
+    @NotNull
     private String bodyName;
+    @NotNull
     private String wheelsName;
+    @NotNull
     private String gliderName;
 
     public RecordInputDto(float totalTime,
@@ -61,7 +69,6 @@ public class RecordInputDto {
                           float lap6,
                           float lap7,
                           boolean is200CC,
-                          String courseName,
                           String characterName,
                           String bodyName,
                           String wheelsName,
@@ -75,7 +82,7 @@ public class RecordInputDto {
         this.lap6 = lap6;
         this.lap7 = lap7;
         this.is200CC = is200CC;
-        this.courseName = courseName;
+        this.courseName = "Baby Park";
         this.characterName = characterName;
         this.bodyName = bodyName;
         this.wheelsName = wheelsName;

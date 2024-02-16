@@ -46,8 +46,6 @@ public class RecordingDataService {
 
     public RecordingData downloadRecording(Long recordId){
         Record record = recordService.recordFromId(recordId);
-        Optional<RecordingData> optionalRecordingData = recordingDataRepository.findById(record.getRecordingData().getId());
-        MediaType mediaType = MediaType.valueOf((optionalRecordingData.get().getType()));
         RecordingData recordingData = record.getRecordingData();
         return  recordingData;
     }

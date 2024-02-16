@@ -17,6 +17,7 @@ public class User {
     private String email;
     @OneToOne(mappedBy = "user")
     private Profile profile;
+    @Column(name = "user_roles")
     private List<UserRole> userRoles;
 
     public User(String username, String password, String email, Profile profile, List<UserRole> userRoles) {
@@ -28,5 +29,11 @@ public class User {
     }
 
     public User() {
+    }
+
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
     }
 }

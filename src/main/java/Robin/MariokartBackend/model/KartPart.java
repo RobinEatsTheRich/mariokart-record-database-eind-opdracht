@@ -13,7 +13,6 @@ import java.util.List;
 @Table(name = "Kart_Parts")
 public class KartPart {
     @Id
-    @GeneratedValue
     private Long id;
     private String name;
     @Column(name = "img_link")

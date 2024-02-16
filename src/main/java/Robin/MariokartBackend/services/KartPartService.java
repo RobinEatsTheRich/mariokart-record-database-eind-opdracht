@@ -1,12 +1,10 @@
 package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.KartPartDto;
-import Robin.MariokartBackend.dtos.ProfileDto;
+import Robin.MariokartBackend.enumerations.PartType;
 import Robin.MariokartBackend.inputDtos.KartPartInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.KartPart;
-import Robin.MariokartBackend.model.KartPart;
-import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.repository.KartPartRepository;
 import org.springframework.stereotype.Service;
 
@@ -47,11 +45,10 @@ public class KartPartService {
     }
 
     public KartPartDto editKartPart(Long id, KartPartInputDto dto){
-        KartPartDto result;
-        KartPart kartPart = kartPartFromDto(dto);
-        kartPartRepos.save(kartPart);
-        result = dtoFromKartPart(kartPartFromId(id));
-        return result;
+        KartPart newKartPart = kartPartFromDto(dto);
+        newKartPart.setId(id);
+        kartPartRepos.save(newKartPart);
+        return dtoFromKartPart(newKartPart);
     }
 
     public void deleteKartPart(Long id){
@@ -76,7 +73,7 @@ public class KartPartService {
         return result;
     }
     public KartPart kartPartFromId(Long id){
-        KartPart result = new KartPart();
+        KartPart result;
         Optional<KartPart> optionalKartPart = kartPartRepos.findById(id);
         if (optionalKartPart.isPresent()){
             result = optionalKartPart.get();
@@ -101,6 +98,9 @@ public class KartPartService {
         kartPart.setId(dto.getId());
         kartPart.setName(dto.getName());
         kartPart.setImgLink(dto.getImgLink());
+        if (dto.getPartType().toUpperCase().equals("BODY") || dto.getPartType().toUpperCase().equals("WHEELS") || dto.getPartType().toUpperCase().equals("GLIDER")){
+            kartPart.setPartType(PartType.valueOf(dto.getPartType()));
+        }
         return kartPart;
     }
 }
