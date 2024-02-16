@@ -44,7 +44,8 @@ public class UserService {
 
     public UserDto getUser(MyUserDetails myUserDetails, String username){
         UserDto result;
-        if (!username.equals(myUserDetails.getUsername())){
+        if (!username.equals(myUserDetails.getUsername()) &&
+                !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
         }
         result= dtoFromUser(userFromName(username));
@@ -68,23 +69,24 @@ public class UserService {
     }
 
     public UserDto editUser(MyUserDetails myUserDetails, String username, UserInputDto dto){
-        if (myUserDetails.getUsername() != username ||
-                myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+        if (!myUserDetails.getUsername().equals(username) &&
+                !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
         }
         User oldUser = userFromName(username);
         User newUser = userFromDto(dto);
-        if (newUser.getUsername() != oldUser.getUsername()){
+        if (!newUser.getUsername().equals(oldUser.getUsername())){
             throw new RecordNotFoundException("Username cannot be changed, this is your ID");
         }
+        newUser.setProfile(oldUser.getProfile());
         userRepos.save(newUser);
         return dtoFromUser(newUser);
     }
 
     public void deleteUser(MyUserDetails myUserDetails, String username){
         Optional<User> userOptional = userRepos.findById(username);
-        if (!userOptional.isPresent() || myUserDetails.getUsername() != username ||
-                myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+        if (!userOptional.isPresent() || (!myUserDetails.getUsername().equals(username) &&
+                !myUserDetails.getUserRoles().contains(UserRole.ADMIN))){
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
         }
         profileService.deleteProfile(myUserDetails, username);
@@ -92,7 +94,7 @@ public class UserService {
     }
 
     public static List<UserRole> userRoleFromName(List<String> stringList){
-        List<UserRole>  result = new ArrayList<UserRole>();
+        List<UserRole>  result = new ArrayList<>();
         for (String string : stringList){
             result.add(UserRole.valueOf(string));
         }

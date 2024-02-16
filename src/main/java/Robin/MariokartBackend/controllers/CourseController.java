@@ -2,11 +2,12 @@ package Robin.MariokartBackend.controllers;
 
 import Robin.MariokartBackend.dtos.CourseDto;
 import Robin.MariokartBackend.inputDtos.CourseInputDto;
+import Robin.MariokartBackend.security.MyUserDetails;
 import Robin.MariokartBackend.services.CourseService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -17,8 +18,14 @@ import java.util.List;
 @RestController
 public class CourseController {
 
-    @Autowired
-    private CourseService courseService;
+
+    private final CourseService courseService;
+
+    public CourseController(CourseService courseService) {
+        this.courseService = courseService;
+    }
+
+
     @GetMapping
     public ResponseEntity<List<CourseDto>> getAllCourses() {
         List<CourseDto> courseDtoList;
@@ -49,7 +56,7 @@ public class CourseController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCourse(@PathVariable Long id){
+    public ResponseEntity<String> deleteCourse( @AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id){
         courseService.deleteCourse(id);
         return new ResponseEntity<>("Course "+id+" succesfully deleted!", HttpStatus.OK);
     }

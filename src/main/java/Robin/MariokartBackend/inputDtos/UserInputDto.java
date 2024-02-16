@@ -13,12 +13,12 @@ import java.util.List;
 @Setter
 public class UserInputDto {
     @NotNull
-    @Size(min=1, max=128)
+    @Size(min=1, max=60)
     private String username;
     @NotNull
-    @Size(min=1, max=128)
+    @Size(min=1, max=60)
     private String password;
-    @Size(min=1, max=128)
+    @Size(max=60)
     private String email;
 
     private List<String> roles;
@@ -33,5 +33,8 @@ public class UserInputDto {
         this.username = username;
         this.password = password;
         this.email = email;
+    }
+
+    public UserInputDto() {
     }
 }

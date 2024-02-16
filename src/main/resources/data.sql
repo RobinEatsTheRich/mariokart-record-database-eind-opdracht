@@ -222,3 +222,5 @@ INSERT INTO courses (id, name, img_link) VALUES (1001, 'Mario Kart Stadium', 'ht
     (1094, '3DS Rosalinas Ice World', 'https://mario.wiki.gallery/images/thumb/1/1d/MK8D_3DS_Rosalina%27s_Ice_World_Course_Icon.png/228px-MK8D_3DS_Rosalina%27s_Ice_World_Course_Icon.png'),
     (1095, 'SNES Bowsers Castle 3', 'https://mario.wiki.gallery/images/thumb/1/1e/MK8D_SNES_Bowser_Castle_3_Course_Icon.png/228px-MK8D_SNES_Bowser_Castle_3_Course_Icon.png'),
     (1096, 'Wii Rainbow Road', 'https://mario.wiki.gallery/images/thumb/0/0c/MK8D_Wii_Rainbow_Road_Course_Icon.png/228px-MK8D_Wii_Rainbow_Road_Course_Icon.png');
+
+-- INSERT INTO users (username, password, email, user_roles) VALUES ("Bonobo","$2a$10$kyIG9z20vQVpG/mp9KE69u2sN0ULXDB/qnSJptSZEUfwNq4dhs0r.","oldTreeByWater@hotmail.com",{0,1});

@@ -1,6 +1,7 @@
 package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.KartPartDto;
+import Robin.MariokartBackend.enumerations.PartType;
 import Robin.MariokartBackend.inputDtos.KartPartInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.KartPart;
@@ -97,6 +98,9 @@ public class KartPartService {
         kartPart.setId(dto.getId());
         kartPart.setName(dto.getName());
         kartPart.setImgLink(dto.getImgLink());
+        if (dto.getPartType().toUpperCase().equals("BODY") || dto.getPartType().toUpperCase().equals("WHEELS") || dto.getPartType().toUpperCase().equals("GLIDER")){
+            kartPart.setPartType(PartType.valueOf(dto.getPartType()));
+        }
         return kartPart;
     }
 }

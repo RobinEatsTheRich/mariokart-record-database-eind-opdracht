@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 
 @Getter
@@ -27,7 +28,6 @@ public class RecordInputDto {
     @PositiveOrZero
     private float lap7;
     private boolean is200CC;
-    //private byte[] recording;
     @NotNull
     private String courseName;
     @NotNull

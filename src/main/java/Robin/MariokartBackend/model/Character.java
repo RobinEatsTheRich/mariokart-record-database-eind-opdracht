@@ -9,7 +9,6 @@ import lombok.Setter;
 @Table(name = "characters")
 public class Character {
     @Id
-    @GeneratedValue
     private Long id;
     private String name;
     @Column(name = "img_link")

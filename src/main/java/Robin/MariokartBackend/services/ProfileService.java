@@ -60,8 +60,8 @@ public class ProfileService {
     }
 
     public ProfileDto editProfile(MyUserDetails myUserDetails, String username, ProfileInputDto dto){
-        if (myUserDetails.getUsername() != username ||
-                myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+        if (!myUserDetails.getUsername().equals(username) &&
+                (!myUserDetails.getUserRoles().contains(UserRole.ADMIN)) && !myUserDetails.getUsername().equals(username)){
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
         }
         Profile oldProfile = profileFromName(username);
@@ -71,16 +71,16 @@ public class ProfileService {
         return dtoFromProfile(newProfile);
     }
     public void deleteProfile(MyUserDetails myUserDetails, String username){
-        if (myUserDetails.getUsername() != username ||
-                myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+        if (!myUserDetails.getUsername().equals(username) &&
+                (!myUserDetails.getUserRoles().contains(UserRole.ADMIN)) && !myUserDetails.getUsername().equals(username)){
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
         }
         profileRepos.deleteById(username);
     }
 
-    public ProfileDto assignRecord(String username, Long recordId){
+    public ProfileDto assignRecord(MyUserDetails myUserDetails, Long recordId){
         Record record = recordService.recordFromId(recordId);
-        Profile profile = profileFromName(username);
+        Profile profile = profileFromName(myUserDetails.getUsername());
         record.setProfile(profile);
         recordRepos.save(record);
         record = recordService.recordFromId(recordId);
@@ -91,8 +91,8 @@ public class ProfileService {
         return dtoFromProfile(profile);
     }
 
-    public ProfileDto addRival(String myName, String theirName){
-        Profile me = profileFromName(myName);
+    public ProfileDto addRival(MyUserDetails myUserDetails, String theirName){
+        Profile me = profileFromName(myUserDetails.getUsername());
         Profile them = profileFromName(theirName);
         List<Profile> myRivals = me.getRivals();
         List<Profile> theirRivals = them.getRivals();
@@ -104,8 +104,8 @@ public class ProfileService {
         profileRepos.save(them);
         return dtoFromProfile(me);
     }
-    public ProfileDto removeRival(String myName, String theirName){
-        Profile me = profileFromName(myName);
+    public ProfileDto removeRival(MyUserDetails myUserDetails, String theirName){
+        Profile me = profileFromName(myUserDetails.getUsername());
         Profile them = profileFromName(theirName);
         List<Profile> myRivals = me.getRivals();
         List<Profile> theirRivals = them.getRivals();
@@ -177,7 +177,7 @@ public class ProfileService {
     public ProfileDto dtoFromProfile(Profile profile) {
         ProfileDto dto = new ProfileDto();
         dto.setUserName(profile.getUserName());
-        if (profile.getRecords() != null){
+        if (profile.getRecords() != null && !profile.getRecords().isEmpty()){
             dto.setRecords(recordService.dtoListFromRecordList(profile.getRecords()));
             dto.setFavoriteCharacter(getFavoriteCharacter(dto.getRecords()));
             dto.setFavoriteBody(getFavoriteKartPart(dto.getRecords(),PartType.BODY));

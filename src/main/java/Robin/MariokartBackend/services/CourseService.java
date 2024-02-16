@@ -109,7 +109,9 @@ public class CourseService {
         dto.setId(course.getId());
         dto.setName(course.getName());
         dto.setImgLink(course.getImgLink());
-        dto.setRecords(recordService.dtoForCoursesListFromRecordList(course.getRecords()));
+        if (course.getRecords() != null){
+            dto.setRecords(recordService.dtoForCoursesListFromRecordList(course.getRecords()));
+        }
         return dto;
     }
 

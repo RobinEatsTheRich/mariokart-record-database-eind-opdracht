@@ -276,7 +276,7 @@ public class recordServiceTest {
     }
 
     @Test
-    void testDeleteUserAllowed(){
+    void testDeleteRecordAllowed(){
         //Arrange
         MyUserDetails myUserDetails = new MyUserDetails(bonobo);
         Mockito
