@@ -1,12 +1,12 @@
 package Robin.MariokartBackend.security;
 
-        import Robin.MariokartBackend.model.User;
-        import Robin.MariokartBackend.repository.UserRepository;
-        import org.springframework.security.core.userdetails.UserDetails;
-        import org.springframework.security.core.userdetails.UserDetailsService;
-        import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import Robin.MariokartBackend.model.User;
+import Robin.MariokartBackend.repository.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-        import java.util.Optional;
+import java.util.Optional;
 
 public class MyUserDetailsService implements UserDetailsService {
 

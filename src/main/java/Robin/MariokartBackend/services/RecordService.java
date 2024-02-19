@@ -61,7 +61,7 @@ public class RecordService {
 
     public RecordDto editRecord(MyUserDetails myUserDetails, Long id, RecordInputDto dto){
         Record oldRecord = recordFromId(id);
-        String recordOwner = oldRecord.getProfile().getUserName();
+        String recordOwner = oldRecord.getProfile().getUsername();
         if (!myUserDetails.getUsername().equals(recordOwner) &&
                 !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+recordOwner+".");
@@ -74,7 +74,7 @@ public class RecordService {
 
     public void deleteRecord(MyUserDetails myUserDetails, Long id){
         Record record = recordFromId(id);
-        String recordOwner = record.getProfile().getUserName();
+        String recordOwner = record.getProfile().getUsername();
         if (!myUserDetails.getUsername().equals(recordOwner) &&
                 !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+recordOwner+".");

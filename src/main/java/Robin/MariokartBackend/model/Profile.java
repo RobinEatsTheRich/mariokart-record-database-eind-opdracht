@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "Profiles")
 public class Profile {
     @Id
-    private String userName;
+    private String username;
     @OneToOne
     private User user;
     @OneToMany(mappedBy = "profile")
@@ -27,14 +27,14 @@ public class Profile {
     )
     private List<Profile> rivals;
 
-    public Profile(String userName,User user,List<Record> records, String nintendoCode) {
-        this.userName = userName;
+    public Profile(String username,User user,List<Record> records, String nintendoCode) {
+        this.username = username;
         this.user = user;
         this.records = records;
         this.nintendoCode = nintendoCode;
     }
-    public Profile(String userName, User user) {
-        this.userName = userName;
+    public Profile(String username, User user) {
+        this.username = username;
         this.user = user;
     }
 

@@ -5,7 +5,6 @@ import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.model.RecordingData;
 import Robin.MariokartBackend.repository.RecordRepository;
 import Robin.MariokartBackend.repository.RecordingDataRepository;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
