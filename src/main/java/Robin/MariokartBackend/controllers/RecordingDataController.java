@@ -1,11 +1,7 @@
 package Robin.MariokartBackend.controllers;
 
 import Robin.MariokartBackend.RecordingUtil;
-import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.model.RecordingData;
-import Robin.MariokartBackend.model.User;
-import Robin.MariokartBackend.repository.RecordRepository;
-import Robin.MariokartBackend.repository.RecordingDataRepository;
 import Robin.MariokartBackend.services.RecordingDataService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,20 +9,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/recordingData")
 public class RecordingDataController {
 
     private final RecordingDataService recordingDataService;
-    private final RecordingDataRepository recordingDataRepository;
-    private final RecordRepository recordRepository;
 
-    public RecordingDataController(RecordingDataService recordingDataService, RecordingDataRepository recordingDataRepository, RecordRepository recordRepository) {
+    public RecordingDataController(RecordingDataService recordingDataService) {
         this.recordingDataService = recordingDataService;
-        this.recordingDataRepository = recordingDataRepository;
-        this.recordRepository = recordRepository;
     }
 
 
@@ -38,11 +29,9 @@ public class RecordingDataController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> downloadRecording(@PathVariable("id") Long recordId) throws IOException {
+    public ResponseEntity<Object> downloadRecording(@PathVariable("id") Long recordId){
         RecordingData recordingData = recordingDataService.downloadRecording(recordId);
         byte[] recording = RecordingUtil.decompressRecording(recordingData.getRecordingData());
         return ResponseEntity.ok().contentType(MediaType.valueOf(recordingData.getType())).body(recording);
-
-
     }
 }

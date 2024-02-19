@@ -126,7 +126,7 @@ INSERT INTO Characters (id, name, img_link) VALUES (1001, 'Mario', 'https://mari
     (1047, 'Pauline', 'https://mario.wiki.gallery/images/thumb/d/dd/MK8DX_Pauline_Icon.png/96px-MK8DX_Pauline_Icon.png'),
     (1048, 'Mii', 'https://mario.wiki.gallery/images/thumb/b/bb/Mii_MK8.png/96px-Mii_MK8.png');
 
-INSERT INTO courses (id, name, img_link) VALUES (1001, 'Mario Kart Stadium', 'https://mario.wiki.gallery/images/thumb/0/09/MK8_Mario_Kart_Stadium_Course_Icon.png/228px-MK8_Mario_Kart_Stadium_Course_Icon.png'),
+INSERT INTO Courses (id, name, img_link) VALUES (1001, 'Mario Kart Stadium', 'https://mario.wiki.gallery/images/thumb/0/09/MK8_Mario_Kart_Stadium_Course_Icon.png/228px-MK8_Mario_Kart_Stadium_Course_Icon.png'),
     (1002, 'Water Park', 'https://mario.wiki.gallery/images/thumb/4/40/MK8_Water_Park_Course_Icon.png/228px-MK8_Water_Park_Course_Icon.png'),
     (1003, 'Sweet Sweet Canyon', 'https://mario.wiki.gallery/images/thumb/a/ad/MK8_Sweet_Sweet_Canyon_Course_Icon.png/228px-MK8_Sweet_Sweet_Canyon_Course_Icon.png'),
     (1004, 'Thwomp Ruins', 'https://mario.wiki.gallery/images/thumb/e/e8/MK8_Thwomp_Ruins_Course_Icon.png/228px-MK8_Thwomp_Ruins_Course_Icon.png'),
@@ -223,4 +223,14 @@ INSERT INTO courses (id, name, img_link) VALUES (1001, 'Mario Kart Stadium', 'ht
     (1095, 'SNES Bowsers Castle 3', 'https://mario.wiki.gallery/images/thumb/1/1e/MK8D_SNES_Bowser_Castle_3_Course_Icon.png/228px-MK8D_SNES_Bowser_Castle_3_Course_Icon.png'),
     (1096, 'Wii Rainbow Road', 'https://mario.wiki.gallery/images/thumb/0/0c/MK8D_Wii_Rainbow_Road_Course_Icon.png/228px-MK8D_Wii_Rainbow_Road_Course_Icon.png');
 
--- INSERT INTO users (username, password, email, user_roles) VALUES ("Bonobo","$2a$10$kyIG9z20vQVpG/mp9KE69u2sN0ULXDB/qnSJptSZEUfwNq4dhs0r.","oldTreeByWater@hotmail.com",{0,1});
+INSERT INTO Users
+    (username, password, email, user_roles) VALUES ('Bonobo','$2a$10$kyIG9z20vQVpG/mp9KE69u2sN0ULXDB/qnSJptSZEUfwNq4dhs0r.','oldTreeByWater@hotmail.com','{0,1}');
+
+INSERT INTO Profiles
+    (username) VALUES ('Bonobo');
+
+UPDATE profiles SET user_username = username
+             WHERE username = username;
+
+-- -- UPDATE profiles SET user = username
+-- -- WHERE username = username;

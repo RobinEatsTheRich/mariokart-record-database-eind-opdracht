@@ -1,7 +1,5 @@
 package Robin.MariokartBackend.inputDtos;
 
-import Robin.MariokartBackend.model.Profile;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;

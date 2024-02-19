@@ -1,7 +1,6 @@
 package Robin.MariokartBackend.dtos;
 
 import Robin.MariokartBackend.enumerations.UserRole;
-import Robin.MariokartBackend.model.Profile;
 import lombok.Getter;
 import lombok.Setter;
 

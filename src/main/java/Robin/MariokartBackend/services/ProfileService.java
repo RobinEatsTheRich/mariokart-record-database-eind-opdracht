@@ -66,7 +66,7 @@ public class ProfileService {
         }
         Profile oldProfile = profileFromName(username);
         Profile newProfile = profileFromDto(dto);
-        newProfile.setUserName(username);
+        newProfile.setUsername(username);
         oldProfile.setNintendoCode(newProfile.getNintendoCode());
         return dtoFromProfile(newProfile);
     }
@@ -157,7 +157,7 @@ public class ProfileService {
     public List<String> nameListfromProfiles(List<Profile> profileList){
         List<String> result = new ArrayList<>();
         for (Profile profile : profileList){
-            result.add(profile.getUserName());
+            result.add(profile.getUsername());
         }
         return result;
     }
@@ -176,7 +176,7 @@ public class ProfileService {
 
     public ProfileDto dtoFromProfile(Profile profile) {
         ProfileDto dto = new ProfileDto();
-        dto.setUserName(profile.getUserName());
+        dto.setUserName(profile.getUsername());
         if (profile.getRecords() != null && !profile.getRecords().isEmpty()){
             dto.setRecords(recordService.dtoListFromRecordList(profile.getRecords()));
             dto.setFavoriteCharacter(getFavoriteCharacter(dto.getRecords()));
