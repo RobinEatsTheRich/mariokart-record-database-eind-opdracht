@@ -9,6 +9,7 @@ import lombok.Setter;
 public class KartPartDto {
     private Long id;
     private String name;
+    private String alternativeName;
     private String imgLink;
     private PartType partType;
 }

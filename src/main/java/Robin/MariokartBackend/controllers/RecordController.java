@@ -31,9 +31,11 @@ public class RecordController {
     private RecordingDataService recordingDataService;
     @GetMapping
     public ResponseEntity<List<RecordDto>> getAllRecords() {
-        List<RecordDto> recordDtoList;
-        recordDtoList = recordService.getAllRecords();
-        return ResponseEntity.ok(recordDtoList);
+        return ResponseEntity.ok(recordService.getAllRecords());
+    }
+    @GetMapping("/rivals_only")
+    public ResponseEntity<List<RecordDto>> getAllRivalRecords(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+        return ResponseEntity.ok(recordService.getAllRivalRecords(myUserDetails));
     }
 
     @GetMapping("/{id}")
@@ -64,8 +66,8 @@ public class RecordController {
         return new ResponseEntity<>("Record "+id+" succesfully deleted!", HttpStatus.OK);
     }
     @PostMapping("/{id}/recording")
-    public ResponseEntity<Object> uploadRecordingData(@RequestParam("file") MultipartFile multipartFile, @PathVariable("id") Long recordId) throws IOException {
-        String recording = recordingDataService.uploadRecording(multipartFile,recordId);
+    public ResponseEntity<Object> uploadRecordingData(@AuthenticationPrincipal MyUserDetails myUserDetails, @RequestParam("file") MultipartFile multipartFile, @PathVariable("id") Long recordId) throws IOException {
+        String recording = recordingDataService.uploadRecording(myUserDetails, multipartFile,recordId);
         return ResponseEntity.ok("file has been uploaded: "+ recording);
     }
 
@@ -74,5 +76,10 @@ public class RecordController {
         RecordingData recordingData = recordingDataService.downloadRecording(recordId);
         byte[] recording = RecordingUtil.decompressRecording(recordingData.getRecordingData());
         return ResponseEntity.ok().contentType(MediaType.valueOf(recordingData.getType())).body(recording);
+    }
+    @DeleteMapping("/{id}/recording")
+    public ResponseEntity<Object> deleteRecording(@PathVariable("id") Long recordId){
+        recordingDataService.deleteRecording(recordId);
+        return new ResponseEntity<>("Recording of record "+recordId+" succesfully deleted!", HttpStatus.OK);
     }
 }
