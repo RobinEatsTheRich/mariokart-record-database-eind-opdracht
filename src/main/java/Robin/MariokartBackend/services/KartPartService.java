@@ -67,8 +67,13 @@ public class KartPartService {
             for (KartPart kartPart : kartPartList){
                 if (name.toLowerCase().equals(kartPart.getName().toLowerCase())){
                     result = kartPart.getId();
+                } else if (kartPart.getAlternativeName() != null && (name.toLowerCase().equals(kartPart.getAlternativeName().toLowerCase()))){
+                    result = kartPart.getId();
                 }
             }
+        }
+        if(result == 0l){
+            throw new RecordNotFoundException("The KartPart '"+name+"' could not be found in the database");
         }
         return result;
     }
@@ -87,6 +92,7 @@ public class KartPartService {
         KartPartDto dto = new KartPartDto();
         dto.setId(kartPart.getId());
         dto.setName(kartPart.getName());
+        dto.setAlternativeName(kartPart.getAlternativeName());
         dto.setImgLink(kartPart.getImgLink());
         dto.setPartType(kartPart.getPartType());
 
@@ -97,6 +103,7 @@ public class KartPartService {
         KartPart kartPart = new KartPart();
         kartPart.setId(dto.getId());
         kartPart.setName(dto.getName());
+        kartPart.setAlternativeName(dto.getAlternativeName());
         kartPart.setImgLink(dto.getImgLink());
         if (dto.getPartType().toUpperCase().equals("BODY") || dto.getPartType().toUpperCase().equals("WHEELS") || dto.getPartType().toUpperCase().equals("GLIDER")){
             kartPart.setPartType(PartType.valueOf(dto.getPartType()));

@@ -80,6 +80,9 @@ public class ProfileService {
 
     public ProfileDto assignRecord(MyUserDetails myUserDetails, Long recordId){
         Record record = recordService.recordFromId(recordId);
+        if (record.getProfile() != null && !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+            throw new ForbiddenException("The record corresponding to ID "+recordId+" already belongs to someone else");
+        }
         Profile profile = profileFromName(myUserDetails.getUsername());
         record.setProfile(profile);
         recordRepos.save(record);

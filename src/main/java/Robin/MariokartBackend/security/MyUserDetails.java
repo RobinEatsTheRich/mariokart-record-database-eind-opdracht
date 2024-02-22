@@ -1,6 +1,7 @@
 package Robin.MariokartBackend.security;
 
 import Robin.MariokartBackend.enumerations.UserRole;
+import Robin.MariokartBackend.model.Profile;
 import Robin.MariokartBackend.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -38,9 +39,12 @@ public class MyUserDetails implements UserDetails {
         return user.getUsername();
     }
 
-
     public List<UserRole> getUserRoles() {
         return user.getUserRoles();
+    }
+
+    public List<Profile> getRivals() {
+        return user.getProfile().getRivals();
     }
 
     @Override

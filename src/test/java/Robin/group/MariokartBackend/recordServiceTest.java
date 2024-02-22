@@ -56,6 +56,9 @@ public class recordServiceTest {
     CourseDtoForRecord rainbowRoadDto = new CourseDtoForRecord();
     Course rainbowRoad = new Course();
 
+    CourseDtoForRecord babyParkDto = new CourseDtoForRecord();
+    Course babyPark = new Course();
+
 
     @BeforeEach
     public void create(){
@@ -93,8 +96,8 @@ public class recordServiceTest {
         bonobosRecord.setGliderId(3001l);
 
         bowsersRecord.setId(2l);
-        bowsersRecord.setTotalTime(1.65118f);
-        bowsersRecord.setLap1(0.43148f);
+        bowsersRecord.setTotalTime(1.55118f);
+        bowsersRecord.setLap1(0.33148f);
         bowsersRecord.setLap2(0.41074f);
         bowsersRecord.setLap3(0.40896f);
         bowsersRecord.setIs200CC(false);
@@ -104,10 +107,14 @@ public class recordServiceTest {
         bowsersRecord.setGliderId(3001l);
 
         miyamotosRecord.setId(3l);
-        miyamotosRecord.setTotalTime(0.95118f);
-        miyamotosRecord.setLap1(0.23148f);
-        miyamotosRecord.setLap2(0.21074f);
-        miyamotosRecord.setLap3(0.20896f);
+        miyamotosRecord.setTotalTime(0.44748f);
+        miyamotosRecord.setLap1(0.07730f);
+        miyamotosRecord.setLap2(0.06273f);
+        miyamotosRecord.setLap3(0.06168f);
+        miyamotosRecord.setLap4(0.06132f);
+        miyamotosRecord.setLap5(0.06133f);
+        miyamotosRecord.setLap6(0.06154f);
+        miyamotosRecord.setLap7(0.06158f);
         miyamotosRecord.setIs200CC(false);
         miyamotosRecord.setCharacterId(1001l);
         miyamotosRecord.setBodyId(1001l);
@@ -129,6 +136,13 @@ public class recordServiceTest {
         rainbowRoad.setId(1097L);
         rainbowRoad.setName("Wii Rainbow Road");
         rainbowRoad.setImgLink("https://mario.wiki.gallery/images/thumb/0/0c/MK8D_Wii_Rainbow_Road_Course_Icon.png/228px-MK8D_Wii_Rainbow_Road_Course_Icon.png");
+
+        babyParkDto.setId(1021L);
+        babyParkDto.setName("Baby Park");
+        babyParkDto.setImgLink("https://mario.wiki.gallery/images/thumb/3/34/MK8_GCN_Baby_Park_Course_Icon.png/228px-MK8_GCN_Baby_Park_Course_Icon.png");
+        babyPark.setId(1021L);
+        babyPark.setName("Baby Park");
+        babyPark.setImgLink("https://mario.wiki.gallery/images/thumb/3/34/MK8_GCN_Baby_Park_Course_Icon.png/228px-MK8_GCN_Baby_Park_Course_Icon.png");
 
         bonobosRecord.setCourse(rainbowRoad);
         bowsersRecord.setCourse(rainbowRoad);
@@ -181,8 +195,48 @@ public class recordServiceTest {
 
         //Assert
         assertEquals("1:35.118", result.get(0).getTotalTime());
-        assertEquals("1:65.118", result.get(1).getTotalTime());
-        assertEquals("0:95.118", result.get(2).getTotalTime());
+        assertEquals("1:55.118", result.get(1).getTotalTime());
+        assertEquals("0:44.748", result.get(2).getTotalTime());
+    }
+
+    @Test
+    void testGetAllRivalRecords(){
+        //Arrange
+        List<Record> allRecords = new ArrayList<>();
+        allRecords.add(bonobosRecord);
+        allRecords.add(bowsersRecord);
+        allRecords.add(miyamotosRecord);
+        Profile bonoboProfile = new Profile("Bonobo",bonobo);
+        bonobo.setProfile(bonoboProfile);
+        Profile bowserProfile = new Profile("-<xX_KingKoopa_Xx>-",bowser);
+        bowser.setProfile(bowserProfile);
+        Profile miyamotoProfile = new Profile("Miyamoto_Shigeru",miyamoto);
+        miyamoto.setProfile(miyamotoProfile);
+        bonobosRecord.setProfile(bonoboProfile);
+        bowsersRecord.setProfile(bowserProfile);
+        miyamotosRecord.setProfile(miyamotoProfile);
+        List<Profile> rivals = new ArrayList<>();
+        rivals.add(bowserProfile);
+        rivals.add(miyamotoProfile);
+        bonoboProfile.setRivals(rivals);
+
+        MyUserDetails myUserDetails = new MyUserDetails(bonobo);
+        Mockito
+                .when(recordRepos.findAll())
+                .thenReturn(allRecords);
+        Mockito
+                .when(characterService.dtoFromCharacter(characterService.characterFromId(1001L)))
+                .thenReturn(marioDto);
+        Mockito
+                .when(kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(1001L)))
+                .thenReturn(standardKartDto);
+
+        //Act
+        List<RecordDto> result = recordService.getAllRivalRecords(myUserDetails);
+
+        //Assert
+        assertEquals("1:55.118", result.get(0).getTotalTime());
+        assertEquals("0:44.748", result.get(1).getTotalTime());
     }
 
     @Test
@@ -207,7 +261,7 @@ public class recordServiceTest {
 
 
     @Test
-    void testCreateUser(){
+    void testCreateRecord(){
         //Arrange
         RecordInputDto inputDto = new RecordInputDto(1.35118f,0.33148f,0.31074f,0.30896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
 
@@ -230,7 +284,7 @@ public class recordServiceTest {
     @Test
     void testEditRecordAllowed(){
         //Arrange
-        RecordInputDto inputDto = new RecordInputDto(1.15118f,0.33148f,0.31074f,0.20896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
+        RecordInputDto inputDto = new RecordInputDto(1.15118f,0.33148f,0.31074f,0.10896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
         MyUserDetails myUserDetails = new MyUserDetails(bonobo);
         Mockito
                 .when(recordRepos.findById(1L))
@@ -246,7 +300,7 @@ public class recordServiceTest {
     @Test
     void testEditRecordNotPossible(){
         //Arrange
-        RecordInputDto inputDto = new RecordInputDto(1.15118f,0.33148f,0.31074f,0.20896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
+        RecordInputDto inputDto = new RecordInputDto(1.15118f,0.33148f,0.31074f,0.10896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
         MyUserDetails myUserDetails = new MyUserDetails(bowser);
         Mockito
                 .when(recordRepos.findById(5L))
@@ -262,7 +316,7 @@ public class recordServiceTest {
     @Test
     void testEditRecordForbidden(){
         //Arrange
-        RecordInputDto inputDto = new RecordInputDto(4.35118f,1.53148f,1.51074f,1.50896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
+        RecordInputDto inputDto = new RecordInputDto(4.35118f,1.33148f,1.31074f,1.30896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
         MyUserDetails myUserDetails = new MyUserDetails(bowser);
         Mockito
                 .when(recordRepos.findById(3L))
@@ -313,7 +367,26 @@ public class recordServiceTest {
         //Assert
         assertEquals("1:41.408", result);
     }
+    @Test
+    void testCheckTimeForValidTrue(){
+        //Act
+        boolean result = recordService.checkTimeForValid(1.41408f);
 
+        //Assert
+        assertEquals(true, result);
+    }
+    @Test
+    void testCheckTimeForValidFalse(){
+        //Act
+        boolean result1 = recordService.checkTimeForValid(1.81408f);
+        boolean result2 = recordService.checkTimeForValid(103.41408f);
+        boolean result3 = recordService.checkTimeForValid(1.41406789765453428f);
+
+        //Assert
+        assertEquals(false, result1);
+        assertEquals(false, result2);
+        assertEquals(false, result3);
+    }
     @Test
     void testDtoListFromRecordListAllowed(){
         //Arrange
@@ -328,8 +401,8 @@ public class recordServiceTest {
 
         //Assert
         assertEquals("1:35.118", result.get(0).getTotalTime());
-        assertEquals("1:65.118", result.get(1).getTotalTime());
-        assertEquals("0:95.118", result.get(2).getTotalTime());
+        assertEquals("1:55.118", result.get(1).getTotalTime());
+        assertEquals("0:44.748", result.get(2).getTotalTime());
     }
 
     @Test
@@ -358,8 +431,8 @@ public class recordServiceTest {
 
         //Assert
         assertEquals("1:35.118", result.get(0).getTotalTime());
-        assertEquals("1:65.118", result.get(1).getTotalTime());
-        assertEquals("0:95.118", result.get(2).getTotalTime());
+        assertEquals("1:55.118", result.get(1).getTotalTime());
+        assertEquals("0:44.748", result.get(2).getTotalTime());
     }
 
     @Test
@@ -413,17 +486,12 @@ public class recordServiceTest {
     }
     @Test
     void testDtoForCoursesFromRecord7Laps(){
-        //Arrange
-        bonobosRecord.setLap4(0.23190f);
-        bonobosRecord.setLap5(0.23190f);
-        bonobosRecord.setLap6(0.23190f);
-        bonobosRecord.setLap7(0.23190f);
 
         //Act
-        String result = recordService.dtoForCoursesFromRecord(bonobosRecord).getTotalTime();
+        String result = recordService.dtoForCoursesFromRecord(miyamotosRecord).getTotalTime();
 
         //Assert
-        assertEquals("1:35.118", result);
+        assertEquals("0:44.748", result);
     }
     @Test
     void testDtoForCoursesFromRecordNoProfile(){
@@ -438,19 +506,6 @@ public class recordServiceTest {
     }
 
     @Test
-    void testDtoForCoursesFromRecordForbidden(){
-        //Arrange
-        bonobosRecord.setLap5(0.23190f);
-        bonobosRecord.setLap6(0.23190f);
-
-        //Act
-        ForbiddenException forbiddenException = assertThrows(ForbiddenException.class, () -> recordService.dtoForCoursesFromRecord(bonobosRecord));
-
-        //Assert
-        assertEquals("Either fill in Lap 1,2&3 and leave the rest blank, or fill in all laps. No inbetweens", forbiddenException.getMessage());
-    }
-
-    @Test
     void testDtoFromRecord(){
         //Act
         String result = recordService.dtoFromRecord(bonobosRecord).getTotalTime();
@@ -460,17 +515,11 @@ public class recordServiceTest {
     }
     @Test
     void testDtoFromRecord7Laps(){
-        //Arrange
-        bonobosRecord.setLap4(0.23190f);
-        bonobosRecord.setLap5(0.23190f);
-        bonobosRecord.setLap6(0.23190f);
-        bonobosRecord.setLap7(0.23190f);
-
         //Act
-        String result = recordService.dtoFromRecord(bonobosRecord).getTotalTime();
+        String result = recordService.dtoFromRecord(miyamotosRecord).getTotalTime();
 
         //Assert
-        assertEquals("1:35.118", result);
+        assertEquals("0:44.748", result);
     }
     @Test
     void testDtoFromRecordNoProfile(){
@@ -483,20 +532,6 @@ public class recordServiceTest {
         //Assert
         assertEquals("1:35.118", result);
     }
-
-    @Test
-    void testDtoFromRecordForbidden(){
-        //Arrange
-        bonobosRecord.setLap5(0.23190f);
-        bonobosRecord.setLap6(0.23190f);
-
-        //Act
-        ForbiddenException forbiddenException = assertThrows(ForbiddenException.class, () -> recordService.dtoFromRecord(bonobosRecord));
-
-        //Assert
-        assertEquals("Either fill in Lap 1,2&3 and leave the rest blank, or fill in all laps. No inbetweens", forbiddenException.getMessage());
-    }
-
     @Test
     void testRecordFromDto(){
         //Arange
@@ -511,17 +546,17 @@ public class recordServiceTest {
     @Test
     void testRecordFromDto7Laps(){
         //Arrange
-        RecordInputDto inputDto = new RecordInputDto(4.35118f,1.53148f,1.51074f,1.50896f,1.53148f,1.51074f,1.50896f,1.50896f,false,"Mario","Standard Kart","Standard Kart","Standard Kart");
+        RecordInputDto inputDto = new RecordInputDto(0.44748f,0.07730f,0.06273f,0.06168f,0.06132f,0.06133f,0.06154f,0.06158f,false,"Mario","Standard Kart","Standard Kart","Standard Kart");
 
         //Act
         float result = recordService.recordFromDto(inputDto).getTotalTime();
 
         //Assert
-        assertEquals(4.35118f, result);
+        assertEquals(0.44748f, result);
     }
 
     @Test
-    void testRecordFromDtoForbidden(){
+    void testRecordFromDtoForbiddenBecauseOfLaps(){
         //Arrange
         RecordInputDto inputDto = new RecordInputDto(1.35118f,0.33148f,0.31074f,0.30896f,false,"Baby Park","Mario","Standard Kart","Standard Kart","Standard Kart");
 
@@ -530,7 +565,20 @@ public class recordServiceTest {
         ForbiddenException forbiddenException = assertThrows(ForbiddenException.class, () -> recordService.recordFromDto(inputDto));
 
         //Assert
-        assertEquals("Baby Park has 7 laps, not 3", forbiddenException.getMessage());
+        assertEquals("The course 'Baby Park' has 7 Laps instead of 3, please adjust request appropriately.", forbiddenException.getMessage());
+    }
+
+    @Test
+    void testRecordFromDtoForbiddenBecauseOfTimes(){
+        //Arrange
+        RecordInputDto inputDto = new RecordInputDto(1.35118f,93.33148f,0.310134674f,0.80896f,false,"Baby Park","Mario","Standard Kart","Standard Kart","Standard Kart");
+
+
+        //Act
+        ForbiddenException forbiddenException = assertThrows(ForbiddenException.class, () -> recordService.recordFromDto(inputDto));
+
+        //Assert
+        assertEquals("some of the total- or lap-times are not in proper format.", forbiddenException.getMessage());
     }
 
 }
