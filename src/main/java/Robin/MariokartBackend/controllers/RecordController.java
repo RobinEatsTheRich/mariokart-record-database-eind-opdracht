@@ -65,7 +65,7 @@ public class RecordController {
         recordService.deleteRecord(myUserDetails, id);
         return new ResponseEntity<>("Record "+id+" succesfully deleted!", HttpStatus.OK);
     }
-    @PostMapping("/{id}/recording")
+    @PutMapping("/{id}/recording")
     public ResponseEntity<Object> uploadRecordingData(@AuthenticationPrincipal MyUserDetails myUserDetails, @RequestParam("file") MultipartFile multipartFile, @PathVariable("id") Long recordId) throws IOException {
         String recording = recordingDataService.uploadRecording(myUserDetails, multipartFile,recordId);
         return ResponseEntity.ok("file has been uploaded: "+ recording);
@@ -78,8 +78,8 @@ public class RecordController {
         return ResponseEntity.ok().contentType(MediaType.valueOf(recordingData.getType())).body(recording);
     }
     @DeleteMapping("/{id}/recording")
-    public ResponseEntity<Object> deleteRecording(@PathVariable("id") Long recordId){
-        recordingDataService.deleteRecording(recordId);
+    public ResponseEntity<Object> deleteRecording(@AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable("id") Long recordId){
+        recordingDataService.deleteRecording(myUserDetails, recordId);
         return new ResponseEntity<>("Recording of record "+recordId+" succesfully deleted!", HttpStatus.OK);
     }
 }
