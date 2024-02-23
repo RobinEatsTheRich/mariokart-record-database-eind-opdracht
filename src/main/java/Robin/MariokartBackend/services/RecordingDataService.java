@@ -50,8 +50,12 @@ public class RecordingDataService {
         return savedRecording.getName();
     }
 
-    public void deleteRecording(Long recordId){
+    public void deleteRecording(MyUserDetails myUserDetails, Long recordId){
         Record record = recordService.recordFromId(recordId);
+        if (record.getProfile().getUsername() != myUserDetails.getUsername() &&
+                !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
+            throw new ForbiddenException("You are not the owner of this record, nor logged in as an admin");
+        }
         if (record.getRecordingData() == null){
             throw new RecordNotFoundException("The record corresponding to "+recordId+" doesn't have a recording to be deleted.");
         }
