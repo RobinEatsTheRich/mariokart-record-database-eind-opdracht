@@ -207,18 +207,11 @@ public class RecordService {
             dto.setLap7(stringFromTimeFloat(record.getLap7()));
         }
         dto.setIs200CC(record.isIs200CC());
-        dto.setCharacter(
-                characterService.dtoFromCharacter(characterService.characterFromId(record.getCharacterId()))
-        );
-        dto.setBody(
-                kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getBodyId()))
-        );
-        dto.setWheels(
-                kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getWheelsId()))
-        );
-        dto.setGlider(
-                kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getGliderId()))
-        );
+        dto.setCharacter(characterService.dtoFromCharacter(characterService.characterFromId(record.getCharacterId())));
+        dto.setCourse(courseService.dtoForRecordFromCourse(courseService.courseFromId(record.getCourse().getId())));
+        dto.setBody(kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getBodyId())));
+        dto.setWheels(kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getWheelsId())));
+        dto.setGlider(kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getGliderId())));
         if (record.getProfile() != null && record.getProfile().getUser() != null){
             dto.setRecordHolder(record.getProfile().getUser().getUsername());
         }
@@ -228,7 +221,7 @@ public class RecordService {
     public Record recordFromDto (RecordInputDto dto) {
 
         //Some extra validation before setting the values
-        boolean isBabyPark = (dto.getCourseName().toLowerCase().equals("baby park"));
+        boolean isBabyPark = (dto.getCourseName().equalsIgnoreCase("baby park"));
         checkTimeForValid(dto.getTotalTime());
         if ((isBabyPark &&
                 !checkTimeForValid(dto.getLap1()) ||

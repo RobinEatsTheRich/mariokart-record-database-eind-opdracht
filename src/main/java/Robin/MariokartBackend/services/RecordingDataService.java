@@ -9,6 +9,7 @@ import Robin.MariokartBackend.model.RecordingData;
 import Robin.MariokartBackend.repository.RecordRepository;
 import Robin.MariokartBackend.repository.RecordingDataRepository;
 import Robin.MariokartBackend.security.MyUserDetails;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,25 +30,23 @@ public class RecordingDataService {
     }
 
     public String uploadRecording(MyUserDetails myUserDetails, MultipartFile multipartFile, Long recordId) throws IOException {
-        Optional<Record> optionalRecord = recordRepository.findById(recordId);
-        Record record = new Record();
-        if (optionalRecord.isPresent()){
-            record = optionalRecord.get();
-        }
+        Record record = recordService.recordFromId(recordId);
         if (record.getProfile().getUsername() != myUserDetails.getUsername() &&
                 !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
             throw new ForbiddenException("You are not the owner of this record, nor logged in as an admin");
+        } else if (multipartFile == null){
+            throw new BadRequestException("No file attached");
+        } else {
+            RecordingData recordingData = new RecordingData();
+            recordingData.setName(multipartFile.getName());
+            recordingData.setType(multipartFile.getContentType());
+            recordingData.setRecordingData(RecordingUtil.compressRecording(multipartFile.getBytes()));
+            recordingData.setRecord(record);
+            RecordingData savedRecording = recordingDataRepository.save(recordingData);
+            record.setRecordingData(recordingData);
+            recordRepository.save(record);
+            return savedRecording.getName();
         }
-        RecordingData recordingData = new RecordingData();
-        recordingData.setName(multipartFile.getName());
-        recordingData.setType(multipartFile.getContentType());
-        recordingData.setRecordingData(RecordingUtil.compressRecording(multipartFile.getBytes()));
-        recordingData.setRecord(record);
-
-        RecordingData savedRecording = recordingDataRepository.save(recordingData);
-        record.setRecordingData(recordingData);
-        recordRepository.save(record);
-        return savedRecording.getName();
     }
 
     public void deleteRecording(MyUserDetails myUserDetails, Long recordId){
@@ -58,10 +57,11 @@ public class RecordingDataService {
         }
         if (record.getRecordingData() == null){
             throw new RecordNotFoundException("The record corresponding to "+recordId+" doesn't have a recording to be deleted.");
+        } else {
+            RecordingData recordingData = record.getRecordingData();
+            recordingDataRepository.deleteById(recordingData.getId());
+            record.setRecordingData(null);
         }
-        RecordingData recordingData = record.getRecordingData();
-        recordingDataRepository.deleteById(recordingData.getId());
-        record.setRecordingData(null);
     }
 
     public RecordingData downloadRecording(Long recordId){

@@ -2,6 +2,7 @@ package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.UserDto;
 import Robin.MariokartBackend.enumerations.UserRole;
+import Robin.MariokartBackend.exceptions.BadRequestException;
 import Robin.MariokartBackend.exceptions.ForbiddenException;
 import Robin.MariokartBackend.inputDtos.UserInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
@@ -69,14 +70,14 @@ public class UserService {
     }
 
     public UserDto editUser(MyUserDetails myUserDetails, String username, UserInputDto dto){
+        User oldUser = userFromName(username);
+        User newUser = userFromDto(dto);
         if (!myUserDetails.getUsername().equals(username) &&
                 !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
         }
-        User oldUser = userFromName(username);
-        User newUser = userFromDto(dto);
         if (!newUser.getUsername().equals(oldUser.getUsername())){
-            throw new RecordNotFoundException("Username cannot be changed, this is your ID");
+            throw new BadRequestException("Username cannot be changed, this is your ID");
         }
         newUser.setProfile(oldUser.getProfile());
         userRepos.save(newUser);
@@ -85,12 +86,15 @@ public class UserService {
 
     public void deleteUser(MyUserDetails myUserDetails, String username){
         Optional<User> userOptional = userRepos.findById(username);
-        if (!userOptional.isPresent() || (!myUserDetails.getUsername().equals(username) &&
-                !myUserDetails.getUserRoles().contains(UserRole.ADMIN))){
+        if (!userOptional.isPresent()){
+            throw new RecordNotFoundException("User "+username+" could not be found in the database");
+        }else if (!myUserDetails.getUsername().equals(username) &&
+                !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
+        } else {
+            profileService.deleteProfile(myUserDetails, username);
+            userRepos.deleteById(username);
         }
-        profileService.deleteProfile(myUserDetails, username);
-        userRepos.deleteById(username);
     }
 
     public static List<UserRole> userRoleFromName(List<String> stringList){

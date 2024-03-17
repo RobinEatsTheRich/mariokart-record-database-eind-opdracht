@@ -5,6 +5,7 @@ import Robin.MariokartBackend.dtos.CourseDtoForRecord;
 import Robin.MariokartBackend.inputDtos.CourseInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Course;
+import Robin.MariokartBackend.model.KartPart;
 import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +51,9 @@ public class CourseService {
     }
 
     public CourseDto editCourse(Long id, CourseInputDto dto){
+        Course oldCourse = courseFromId(id);  //This is to efficiently check whether the ID exists
         Course newCourse = courseFromDto(dto);
-        newCourse.setId(id);
+        newCourse.setId(oldCourse.getId());
         courseRepos.save(newCourse);
         return dtoFromCourse(newCourse);
     }
@@ -78,10 +80,13 @@ public class CourseService {
         List<Course> courseList = courseRepos.findAll();
         if (!courseList.isEmpty()){
             for (Course course : courseList){
-                if (name.toLowerCase().equals(course.getName().toLowerCase())){
-                    result = course.getId();
+                if (name.equalsIgnoreCase(course.getName())){
+                    return course.getId();
                 }
             }
+        }
+        if(result == 0l){
+            throw new RecordNotFoundException("The Course '"+name+"' could not be found in the database");
         }
         return result;
     }
@@ -109,7 +114,7 @@ public class CourseService {
         dto.setId(course.getId());
         dto.setName(course.getName());
         dto.setImgLink(course.getImgLink());
-        if (course.getRecords() != null){
+        if (course.getRecords() != null && !course.getRecords().isEmpty()){
             dto.setRecords(recordService.dtoForCoursesListFromRecordList(course.getRecords()));
         }
         return dto;

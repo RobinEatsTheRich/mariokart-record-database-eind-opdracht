@@ -64,10 +64,13 @@ public class CharacterService {
         List<Character> characterList = characterRepos.findAll();
         if (!characterList.isEmpty()){
             for (Character character : characterList){
-                if (name.toLowerCase().equals(character.getName().toLowerCase())){
+                if (name.equalsIgnoreCase(character.getName())){
                     result = character.getId();
                 }
             }
+        }
+        if(result == 0l){
+            throw new RecordNotFoundException("The Character '"+name+"' could not be found in the database");
         }
         return result;
     }

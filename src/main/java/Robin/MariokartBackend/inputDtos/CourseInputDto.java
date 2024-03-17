@@ -11,6 +11,8 @@ public class CourseInputDto {
     @NotNull
     @Size(min=1, max=128)
     private String name;
+
+    @NotNull
     @Size(min=1, max=360)
     private String imgLink;
 

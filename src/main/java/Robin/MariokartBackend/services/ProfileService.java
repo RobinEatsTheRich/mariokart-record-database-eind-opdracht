@@ -148,7 +148,6 @@ public class ProfileService {
                 }
             }
         }
-
         for (RecordDto recordDto : recordList){
             allPartId.add(recordDto.getCharacter().getId());
         }
@@ -187,7 +186,7 @@ public class ProfileService {
             dto.setFavoriteWheels(getFavoriteKartPart(dto.getRecords(),PartType.WHEELS));
             dto.setFavoriteGlider(getFavoriteKartPart(dto.getRecords(),PartType.GLIDER));
         }
-        if (profile.getRivals() != null){
+        if (profile.getRivals() != null && !profile.getRivals().isEmpty()){
             dto.setRivals(nameListfromProfiles(profile.getRivals()));
         }
         dto.setNintendoCode(profile.getNintendoCode());

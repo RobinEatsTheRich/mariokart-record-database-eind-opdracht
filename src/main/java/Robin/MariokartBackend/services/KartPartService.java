@@ -2,6 +2,7 @@ package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.KartPartDto;
 import Robin.MariokartBackend.enumerations.PartType;
+import Robin.MariokartBackend.exceptions.BadRequestException;
 import Robin.MariokartBackend.inputDtos.KartPartInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.KartPart;
@@ -45,8 +46,9 @@ public class KartPartService {
     }
 
     public KartPartDto editKartPart(Long id, KartPartInputDto dto){
+        KartPart oldKartPart = kartPartFromId(id);  //This is to efficiently check whether the ID exists
         KartPart newKartPart = kartPartFromDto(dto);
-        newKartPart.setId(id);
+        newKartPart.setId(oldKartPart.getId());
         kartPartRepos.save(newKartPart);
         return dtoFromKartPart(newKartPart);
     }
@@ -65,9 +67,9 @@ public class KartPartService {
         List<KartPart> kartPartList = kartPartRepos.findAll();
         if (!kartPartList.isEmpty()){
             for (KartPart kartPart : kartPartList){
-                if (name.toLowerCase().equals(kartPart.getName().toLowerCase())){
+                if (name.equalsIgnoreCase(kartPart.getName())){
                     result = kartPart.getId();
-                } else if (kartPart.getAlternativeName() != null && (name.toLowerCase().equals(kartPart.getAlternativeName().toLowerCase()))){
+                } else if (kartPart.getAlternativeName() != null && (name.equalsIgnoreCase(kartPart.getAlternativeName()))){
                     result = kartPart.getId();
                 }
             }
@@ -95,7 +97,6 @@ public class KartPartService {
         dto.setAlternativeName(kartPart.getAlternativeName());
         dto.setImgLink(kartPart.getImgLink());
         dto.setPartType(kartPart.getPartType());
-
         return dto;
     }
 
@@ -105,8 +106,10 @@ public class KartPartService {
         kartPart.setName(dto.getName());
         kartPart.setAlternativeName(dto.getAlternativeName());
         kartPart.setImgLink(dto.getImgLink());
-        if (dto.getPartType().toUpperCase().equals("BODY") || dto.getPartType().toUpperCase().equals("WHEELS") || dto.getPartType().toUpperCase().equals("GLIDER")){
+        if (dto.getPartType().equalsIgnoreCase("BODY") || dto.getPartType().equalsIgnoreCase("WHEELS") || dto.getPartType().equalsIgnoreCase("GLIDER")){
             kartPart.setPartType(PartType.valueOf(dto.getPartType()));
+        } else {
+            throw new BadRequestException("The kartpart needs to be one of the valid part types 'BODY', 'WHEELS', or 'GLIDER'.");
         }
         return kartPart;
     }
