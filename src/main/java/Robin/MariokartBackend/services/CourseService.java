@@ -63,7 +63,7 @@ public class CourseService {
         if (CourseOptional.isPresent()) {
             courseRepos.deleteById(id);
         } else {
-            throw new RecordNotFoundException("The course corresponding to ID:"+id+" could not be found in the database");
+            throw new RecordNotFoundException("The course corresponding to ID:"+id+" could not be found in the database.");
         }
     }
 
@@ -86,7 +86,7 @@ public class CourseService {
             }
         }
         if(result == 0l){
-            throw new RecordNotFoundException("The Course '"+name+"' could not be found in the database");
+            throw new RecordNotFoundException("The Course '"+name+"' could not be found in the database.");
         }
         return result;
     }
@@ -96,7 +96,7 @@ public class CourseService {
         if (optionalCourse.isPresent()){
             result = optionalCourse.get();
         } else {
-            throw new RecordNotFoundException("The course corresponding to ID:"+id+" could not be found in the database");
+            throw new RecordNotFoundException("The course corresponding to ID:"+id+" could not be found in the database.");
         }
         return result;
     }

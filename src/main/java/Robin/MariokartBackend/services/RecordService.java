@@ -3,6 +3,7 @@ package Robin.MariokartBackend.services;
 import Robin.MariokartBackend.dtos.RecordDto;
 import Robin.MariokartBackend.dtos.RecordDtoForCourse;
 import Robin.MariokartBackend.enumerations.UserRole;
+import Robin.MariokartBackend.exceptions.BadRequestException;
 import Robin.MariokartBackend.exceptions.ForbiddenException;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
@@ -132,7 +133,7 @@ public class RecordService {
                 recordDtoList.add(recordDto);
             }
         } else {
-            throw new RecordNotFoundException("The list of records to be converted was empty");
+            throw new RecordNotFoundException("The list of records to be converted was empty.");
         }
         return recordDtoList;
     }
@@ -144,7 +145,7 @@ public class RecordService {
                 recordDtoList.add(recordDto);
             }
         } else {
-            throw new RecordNotFoundException("The list of records to be converted was empty");
+            throw new RecordNotFoundException("The list of records to be converted was empty.");
         }
         return recordDtoList;
     }
@@ -156,7 +157,7 @@ public class RecordService {
         {
             result = recordOptional.get();
         } else{
-            throw new RecordNotFoundException("The record corresponding to ID:"+id+" could not be found in the database");
+            throw new RecordNotFoundException("The record corresponding to ID:"+id+" could not be found in the database.");
         }
         return result;
     }
@@ -208,7 +209,11 @@ public class RecordService {
         }
         dto.setIs200CC(record.isIs200CC());
         dto.setCharacter(characterService.dtoFromCharacter(characterService.characterFromId(record.getCharacterId())));
-        dto.setCourse(courseService.dtoForRecordFromCourse(courseService.courseFromId(record.getCourse().getId())));
+        if (record.getCourse() == null){
+            throw new BadRequestException("A record needs a Course.");
+        } else {
+            dto.setCourse(courseService.dtoForRecordFromCourse(record.getCourse()));
+        }
         dto.setBody(kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getBodyId())));
         dto.setWheels(kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getWheelsId())));
         dto.setGlider(kartpartService.dtoFromKartPart(kartpartService.kartPartFromId(record.getGliderId())));
@@ -219,7 +224,6 @@ public class RecordService {
     }
 
     public Record recordFromDto (RecordInputDto dto) {
-
         //Some extra validation before setting the values
         boolean isBabyPark = (dto.getCourseName().equalsIgnoreCase("baby park"));
         checkTimeForValid(dto.getTotalTime());

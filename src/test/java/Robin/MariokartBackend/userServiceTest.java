@@ -1,6 +1,7 @@
-package Robin.group.MariokartBackend;
+package Robin.MariokartBackend;
 
 import Robin.MariokartBackend.enumerations.UserRole;
+import Robin.MariokartBackend.exceptions.BadRequestException;
 import Robin.MariokartBackend.exceptions.ForbiddenException;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.inputDtos.UserInputDto;
@@ -43,7 +44,7 @@ public class userServiceTest {
     User miyamoto = new User();
 
     @BeforeEach
-    public void create(){
+    public void setUp(){
         bonobo.setUsername("Bonobo");
         bonobo.setPassword("P3achL0ver");
         bonobo.setEmail("oldTreeByWater@hotmail.com");
@@ -61,7 +62,7 @@ public class userServiceTest {
     }
 
     @AfterEach
-    public void cleanup(){
+    public void tearDown(){
     bonobo = null;
     bowser = null;
     miyamoto = null;
@@ -108,10 +109,10 @@ public class userServiceTest {
                 .thenReturn(Optional.ofNullable(bonobo));
 
         //Act
-        String result = userService.getUser(bonoboUserDetails,"Bonobo").getPassword();
+        String result = userService.getUser(bonoboUserDetails,"Bonobo").getEmail();
 
         //Assert
-        assertEquals("P3achL0ver", result);
+        assertEquals("oldTreeByWater@hotmail.com", result);
     }
 
     @Test
@@ -138,17 +139,14 @@ public class userServiceTest {
                 .when(userRepos.findById("Bonobo"))
                 .thenReturn(Optional.empty());
         Mockito
-                .when(passwordEncoder.encode("P3achL0ver"))
-                .thenReturn("[ENCODED]P3achL0ver[ENCODED]");
-        Mockito
                 .when(profileService.profileFromName("Bonobo"))
                 .thenReturn(profile);
 
         //Act
-        String result = userService.createUser(userInputDto).getPassword();
+        String result = userService.createUser(userInputDto).getEmail();
 
         //Assert
-        assertEquals("[ENCODED]P3achL0ver[ENCODED]", result);
+        assertEquals("oldTreeByWater@hotmail.com", result);
     }
 
     @Test
@@ -180,15 +178,11 @@ public class userServiceTest {
         Mockito
                 .when(userRepos.findById("Bonobo"))
                 .thenReturn(Optional.ofNullable(bonobo));
-        Mockito
-                .when(passwordEncoder.encode("4ctu4llyIpr3f3rCh3rri3sN0w"))
-                .thenReturn("[ENCODED]4ctu4llyIpr3f3rCh3rri3sN0w[ENCODED]");
-
         //Act
-        String result = userService.editUser(myUserDetails,"Bonobo", userInputDto).getPassword();
+        String result = userService.editUser(myUserDetails,"Bonobo", userInputDto).getEmail();
 
         //Assert
-        assertEquals("[ENCODED]4ctu4llyIpr3f3rCh3rri3sN0w[ENCODED]", result);
+        assertEquals("newTreeByWater@hotmail.com", result);
     }
 
     @Test
@@ -203,10 +197,10 @@ public class userServiceTest {
                 .when(userRepos.findById("-<xX_KingKoopa_Xx>-"))
                 .thenReturn(Optional.ofNullable(bowser));
         //Act
-        RecordNotFoundException recordNotFoundException = assertThrows(RecordNotFoundException.class, () -> userService.editUser(myUserDetails,"-<xX_KingKoopa_Xx>-",userInputDto));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> userService.editUser(myUserDetails,"-<xX_KingKoopa_Xx>-",userInputDto));
 
         //Assert
-        assertEquals("Username cannot be changed, this is your ID", recordNotFoundException.getMessage());
+        assertEquals("Username cannot be changed, this is your ID.", badRequestException.getMessage());
     }
 
     @Test
@@ -217,7 +211,9 @@ public class userServiceTest {
         UserInputDto userInputDto = new UserInputDto("stinker","BadDad#2","Shigeru_Miyamoto@smellmyfarts.com");
         userInputDto.setRoles(userRoles);
         MyUserDetails myUserDetails = new MyUserDetails(bowser);
-
+        Mockito
+                .when(userRepos.findById("Miyamoto_Shigeru"))
+                .thenReturn(Optional.ofNullable(miyamoto));
         //Act
         ForbiddenException forbiddenException = assertThrows(ForbiddenException.class, () -> userService.editUser(myUserDetails,"Miyamoto_Shigeru",userInputDto));
 
@@ -245,12 +241,27 @@ public class userServiceTest {
     void testDeleteUserForbidden(){
         //Arrange
         MyUserDetails myUserDetails = new MyUserDetails(bowser);
+        Mockito
+                .when(userRepos.findById("Miyamoto_Shigeru"))
+                .thenReturn(Optional.ofNullable(miyamoto));
 
         //Act
         ForbiddenException forbiddenException = assertThrows(ForbiddenException.class, () -> userService.deleteUser(myUserDetails,"Miyamoto_Shigeru"));
 
         //Assert
         assertEquals("You are logged in as -<xX_KingKoopa_Xx>-, not as Miyamoto_Shigeru.", forbiddenException.getMessage());
+    }
+
+    @Test
+    void testDeleteUserNotPossible(){
+        //Arrange
+        MyUserDetails myUserDetails = new MyUserDetails(bowser);
+
+        //Act
+        RecordNotFoundException recordNotFoundException = assertThrows(RecordNotFoundException.class, () -> userService.deleteUser(myUserDetails,"iyamoto_Shigeru"));
+
+        //Assert
+        assertEquals("User iyamoto_Shigeru could not be found in the database.", recordNotFoundException.getMessage());
     }
 
     @Test
@@ -278,10 +289,10 @@ public class userServiceTest {
                 .thenReturn(Optional.ofNullable(bonobo));
 
         //Act
-        String result = userService.userFromName("Bonobo").getPassword();
+        String result = userService.userFromName("Bonobo").getEmail();
 
         //Assert
-        assertEquals("P3achL0ver", result);
+        assertEquals("oldTreeByWater@hotmail.com", result);
     }
 
     @Test
@@ -295,7 +306,7 @@ public class userServiceTest {
         RecordNotFoundException recordNotFoundException = assertThrows(RecordNotFoundException.class, () -> userService.userFromName("-<X_KingKopa_Xx>-"));
 
         //Assert
-        assertEquals("User -<X_KingKopa_Xx>- could not be found in the database", recordNotFoundException.getMessage());
+        assertEquals("User -<X_KingKopa_Xx>- could not be found in the database.", recordNotFoundException.getMessage());
     }
 
     @Test
@@ -305,10 +316,10 @@ public class userServiceTest {
         bonobo.setProfile(profile);
 
         //Act
-        String result = userService.dtoFromUser(bonobo).getPassword();
+        String result = userService.dtoFromUser(bonobo).getEmail();
 
         //Assert
-        assertEquals("P3achL0ver", result);
+        assertEquals("oldTreeByWater@hotmail.com", result);
     }
 
     @Test
@@ -317,15 +328,12 @@ public class userServiceTest {
         UserInputDto userInputDto = new UserInputDto("Bonobo","P3achL0ver","oldTreeByWater@hotmail.com");
         List<String> userRoles = new ArrayList<>();
         userInputDto.setRoles(userRoles);
-        Mockito
-                .when(passwordEncoder.encode("P3achL0ver"))
-                .thenReturn("[ENCODED]P3achL0ver[ENCODED]");
 
         //Act
-        String result = userService.userFromDto(userInputDto).getPassword();
+        String result = userService.userFromDto(userInputDto).getEmail();
 
         //Assert
-        assertEquals("[ENCODED]P3achL0ver[ENCODED]", result);
+        assertEquals("oldTreeByWater@hotmail.com", result);
     }
 
 

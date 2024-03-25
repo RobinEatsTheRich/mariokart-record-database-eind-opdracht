@@ -55,7 +55,7 @@ public class CharacterService {
         if (characterOptional.isPresent()) {
             characterRepos.deleteById(id);
         } else {
-            throw new RecordNotFoundException("The character corresponding to ID:"+id+" could not be found in the database");
+            throw new RecordNotFoundException("The character corresponding to ID:"+id+" could not be found in the database.");
         }
     }
 
@@ -70,7 +70,7 @@ public class CharacterService {
             }
         }
         if(result == 0l){
-            throw new RecordNotFoundException("The Character '"+name+"' could not be found in the database");
+            throw new RecordNotFoundException("The Character '"+name+"' could not be found in the database.");
         }
         return result;
     }
@@ -80,7 +80,7 @@ public class CharacterService {
         if (optionalCharacter.isPresent()){
             result = optionalCharacter.get();
         } else {
-            throw new RecordNotFoundException("The character corresponding to ID:"+id+" could not be found in the database");
+            throw new RecordNotFoundException("The character corresponding to ID:"+id+" could not be found in the database.");
         }
         return result;
     }

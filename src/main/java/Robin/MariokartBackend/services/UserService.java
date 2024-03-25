@@ -77,7 +77,7 @@ public class UserService {
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
         }
         if (!newUser.getUsername().equals(oldUser.getUsername())){
-            throw new BadRequestException("Username cannot be changed, this is your ID");
+            throw new BadRequestException("Username cannot be changed, this is your ID.");
         }
         newUser.setProfile(oldUser.getProfile());
         userRepos.save(newUser);
@@ -87,7 +87,7 @@ public class UserService {
     public void deleteUser(MyUserDetails myUserDetails, String username){
         Optional<User> userOptional = userRepos.findById(username);
         if (!userOptional.isPresent()){
-            throw new RecordNotFoundException("User "+username+" could not be found in the database");
+            throw new RecordNotFoundException("User "+username+" could not be found in the database.");
         }else if (!myUserDetails.getUsername().equals(username) &&
                 !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+username+".");
@@ -112,7 +112,7 @@ public class UserService {
         {
             result = userOptional.get();
         } else{
-            throw new RecordNotFoundException("User "+username+" could not be found in the database");
+            throw new RecordNotFoundException("User "+username+" could not be found in the database.");
         }
         return result;
     }
@@ -120,7 +120,6 @@ public class UserService {
     public UserDto dtoFromUser(User user) {
         UserDto dto = new UserDto();
         dto.setUsername(user.getUsername());
-        dto.setPassword(user.getPassword());
         dto.setEmail(user.getEmail());
         dto.setUserRoles(user.getUserRoles());
         dto.setProfile(profileService.dtoFromProfile(user.getProfile()));

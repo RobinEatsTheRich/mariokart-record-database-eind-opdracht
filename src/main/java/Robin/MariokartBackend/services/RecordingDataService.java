@@ -31,11 +31,16 @@ public class RecordingDataService {
 
     public String uploadRecording(MyUserDetails myUserDetails, MultipartFile multipartFile, Long recordId) throws IOException {
         Record record = recordService.recordFromId(recordId);
-        if (record.getProfile().getUsername() != myUserDetails.getUsername() &&
+        if (record.getProfile() == null){
+            throw new ForbiddenException("This Record is not assigned to a profile yet, so you cannot be the owner.");
+        } else if (record.getProfile().getUsername() != myUserDetails.getUsername() &&
                 !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
-            throw new ForbiddenException("You are not the owner of this record, nor logged in as an admin");
-        } else if (multipartFile == null){
-            throw new BadRequestException("No file attached");
+            throw new ForbiddenException("You are not the owner of this record, nor logged in as an admin.");
+        } else if (multipartFile == null || multipartFile.isEmpty()){
+            throw new BadRequestException("No file attached.");
+
+        } else if (record.getRecordingData() != null){
+            throw new BadRequestException("This record already has a recording attached.");
         } else {
             RecordingData recordingData = new RecordingData();
             recordingData.setName(multipartFile.getName());
@@ -53,7 +58,7 @@ public class RecordingDataService {
         Record record = recordService.recordFromId(recordId);
         if (record.getProfile().getUsername() != myUserDetails.getUsername() &&
                 !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
-            throw new ForbiddenException("You are not the owner of this record, nor logged in as an admin");
+            throw new ForbiddenException("You are not the owner of this record, nor logged in as an admin.");
         }
         if (record.getRecordingData() == null){
             throw new RecordNotFoundException("The record corresponding to "+recordId+" doesn't have a recording to be deleted.");

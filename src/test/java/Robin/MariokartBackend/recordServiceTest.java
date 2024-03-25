@@ -1,18 +1,17 @@
-package Robin.group.MariokartBackend;
+package Robin.MariokartBackend;
 
 import Robin.MariokartBackend.dtos.*;
 import Robin.MariokartBackend.enumerations.PartType;
 import Robin.MariokartBackend.enumerations.UserRole;
+import Robin.MariokartBackend.exceptions.BadRequestException;
 import Robin.MariokartBackend.exceptions.ForbiddenException;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.inputDtos.RecordInputDto;
 import Robin.MariokartBackend.model.*;
-import Robin.MariokartBackend.model.Character;
 import Robin.MariokartBackend.model.Record;
 import Robin.MariokartBackend.repository.*;
 import Robin.MariokartBackend.security.MyUserDetails;
 import Robin.MariokartBackend.services.*;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +60,7 @@ public class recordServiceTest {
 
 
     @BeforeEach
-    public void create(){
+    public void setUp(){
 
 
         List<UserRole> noAdmin = new ArrayList<>();
@@ -159,7 +158,7 @@ public class recordServiceTest {
         miyamotosRecord.setProfile(miyamotosProfile);
     }
     @AfterEach
-    public void clearUp(){
+    public void tearDown(){
         bonobo = null;
         bowser = null;
         miyamoto = null;
@@ -263,7 +262,7 @@ public class recordServiceTest {
     @Test
     void testCreateRecord(){
         //Arrange
-        RecordInputDto inputDto = new RecordInputDto(1.35118f,0.33148f,0.31074f,0.30896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
+        RecordInputDto dto = new RecordInputDto(1.35118f,0.33148f,0.31074f,0.30896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
 
         Mockito
                 .when(characterService.characterIdFromName("Mario"))
@@ -274,9 +273,11 @@ public class recordServiceTest {
         Mockito
                 .when(kartpartService.kartPartIdFromName("Standard Kart"))
                 .thenReturn(1001L);
+        Mockito
+                .when(courseRepos.getReferenceById(courseService.courseIdFromName(dto.getCourseName())))
+                .thenReturn(rainbowRoad);
         //Act
-        String result = recordService.createRecord(inputDto).getTotalTime();
-
+        String result = recordService.createRecord(dto).getTotalTime();
         //Assert
         assertEquals("1:35.118", result);
     }
@@ -284,14 +285,21 @@ public class recordServiceTest {
     @Test
     void testEditRecordAllowed(){
         //Arrange
-        RecordInputDto inputDto = new RecordInputDto(1.15118f,0.33148f,0.31074f,0.10896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
+        RecordInputDto dto = new RecordInputDto(1.15118f,0.33148f,0.31074f,0.10896f,false,"Wii Rainbow Road","Mario","Standard Kart","Standard Kart","Standard Kart");
         MyUserDetails myUserDetails = new MyUserDetails(bonobo);
+
         Mockito
                 .when(recordRepos.findById(1L))
                 .thenReturn(Optional.ofNullable(bonobosRecord));
+        Mockito
+                .when(courseService.courseIdFromName("Wii Rainbow Road"))
+                .thenReturn(1096L);
+        Mockito
+                .when(courseRepos.getReferenceById(courseService.courseIdFromName(dto.getCourseName())))
+                .thenReturn(rainbowRoad);
 
         //Act
-        String result = recordService.editRecord(myUserDetails,1l,inputDto).getTotalTime();
+        String result = recordService.editRecord(myUserDetails,1l,dto).getTotalTime();
 
         //Assert
         assertEquals("1:15.118", result);
@@ -310,7 +318,7 @@ public class recordServiceTest {
         RecordNotFoundException recordNotFoundException = assertThrows(RecordNotFoundException.class, () -> recordService.editRecord(myUserDetails,5l,inputDto));
 
         //Assert
-        assertEquals("The record corresponding to ID:5 could not be found in the database", recordNotFoundException.getMessage());
+        assertEquals("The record corresponding to ID:5 could not be found in the database.", recordNotFoundException.getMessage());
     }
 
     @Test
@@ -414,7 +422,7 @@ public class recordServiceTest {
         RecordNotFoundException recordNotFoundException = assertThrows(RecordNotFoundException.class, () -> recordService.dtoListFromRecordList(recordList));
 
         //Assert
-        assertEquals("The list of records to be converted was empty", recordNotFoundException.getMessage());
+        assertEquals("The list of records to be converted was empty.", recordNotFoundException.getMessage());
     }
 
     @Test
@@ -444,7 +452,7 @@ public class recordServiceTest {
         RecordNotFoundException recordNotFoundException = assertThrows(RecordNotFoundException.class, () -> recordService.dtoForCoursesListFromRecordList(recordList));
 
         //Assert
-        assertEquals("The list of records to be converted was empty", recordNotFoundException.getMessage());
+        assertEquals("The list of records to be converted was empty.", recordNotFoundException.getMessage());
     }
 
 
@@ -473,7 +481,7 @@ public class recordServiceTest {
         RecordNotFoundException recordNotFoundException = assertThrows(RecordNotFoundException.class, () -> recordService.recordFromId(5l));
 
         //Assert
-        assertEquals("The record corresponding to ID:5 could not be found in the database", recordNotFoundException.getMessage());
+        assertEquals("The record corresponding to ID:5 could not be found in the database.", recordNotFoundException.getMessage());
     }
 
     @Test
@@ -531,6 +539,17 @@ public class recordServiceTest {
 
         //Assert
         assertEquals("1:35.118", result);
+    }
+    @Test
+    void testDtoFromRecordNoCourse(){
+        //Arrange
+        bonobosRecord.setCourse(null);
+
+        //Act
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> recordService.dtoFromRecord(bonobosRecord));
+
+        //Assert
+        assertEquals("A record needs a Course.", badRequestException.getMessage());
     }
     @Test
     void testRecordFromDto(){

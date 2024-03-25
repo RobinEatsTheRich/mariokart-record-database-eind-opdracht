@@ -10,7 +10,6 @@ import java.util.List;
 @Setter
 public class UserDto {
     private String username;
-    private String password;
     private String email;
     private List<UserRole> userRoles;
     private ProfileDto profile;

@@ -81,7 +81,7 @@ public class ProfileService {
     public ProfileDto assignRecord(MyUserDetails myUserDetails, Long recordId){
         Record record = recordService.recordFromId(recordId);
         if (record.getProfile() != null && !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
-            throw new ForbiddenException("The record corresponding to ID "+recordId+" already belongs to someone else");
+            throw new ForbiddenException("The record corresponding to ID "+recordId+" already belongs to someone else.");
         }
         Profile profile = profileFromName(myUserDetails.getUsername());
         record.setProfile(profile);
@@ -171,7 +171,7 @@ public class ProfileService {
         {
             result = profileOptional.get();
         } else{
-            throw new RecordNotFoundException("The profile belonging to "+username+" could not be found in the database");
+            throw new RecordNotFoundException("The profile belonging to "+username+" could not be found in the database.");
         }
         return result;
     }

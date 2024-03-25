@@ -33,17 +33,17 @@ public class ProfileController {
         ProfileDto edittedProfileDto = profileService.editProfile(myUserDetails, id, inputDto);
         return ResponseEntity.ok(edittedProfileDto);
     }
-    @PutMapping("/assign_record/{id}")
+    @PutMapping("/record/{id}")
     public ResponseEntity<ProfileDto> assignRecord(@Valid @AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable Long id) {
         ProfileDto edittedProfileDto = profileService.assignRecord(myUserDetails, id);
         return ResponseEntity.ok(edittedProfileDto);
     }
-    @PutMapping("/add_rival/{id}")
+    @PutMapping("/rival/{id}")
     public ResponseEntity<ProfileDto> addRival(@Valid @AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable String id) {
         ProfileDto edittedProfileDto = profileService.addRival(myUserDetails, id);
         return ResponseEntity.ok(edittedProfileDto);
     }
-    @PutMapping("/remove_rival/{id}")
+    @DeleteMapping("/rival/{id}")
     public ResponseEntity<ProfileDto> removeRival(@Valid @AuthenticationPrincipal MyUserDetails myUserDetails, @PathVariable String id) {
         ProfileDto edittedProfileDto = profileService.removeRival(myUserDetails, id);
         return ResponseEntity.ok(edittedProfileDto);

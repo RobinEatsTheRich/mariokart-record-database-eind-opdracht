@@ -58,7 +58,7 @@ public class KartPartService {
         if (kartPartOptional.isPresent()) {
             kartPartRepos.deleteById(id);
         } else {
-            throw new RecordNotFoundException("The KartPart corresponding to ID "+id+" could not be found in the database");
+            throw new RecordNotFoundException("The KartPart corresponding to ID "+id+" could not be found in the database.");
         }
     }
 
@@ -75,7 +75,7 @@ public class KartPartService {
             }
         }
         if(result == 0l){
-            throw new RecordNotFoundException("The KartPart '"+name+"' could not be found in the database");
+            throw new RecordNotFoundException("The KartPart '"+name+"' could not be found in the database.");
         }
         return result;
     }
@@ -85,7 +85,7 @@ public class KartPartService {
         if (optionalKartPart.isPresent()){
             result = optionalKartPart.get();
         } else {
-            throw new RecordNotFoundException("The KartPart corresponding to ID "+id+" could not be found in the database");
+            throw new RecordNotFoundException("The KartPart corresponding to ID "+id+" could not be found in the database.");
         }
         return result;
     }
