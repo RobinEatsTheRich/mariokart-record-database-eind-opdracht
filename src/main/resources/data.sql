@@ -224,10 +224,10 @@ INSERT INTO Courses (id, name, img_link) VALUES (1001, 'Mario Kart Stadium', 'ht
     (1096, 'Wii Rainbow Road', 'https://mario.wiki.gallery/images/thumb/0/0c/MK8D_Wii_Rainbow_Road_Course_Icon.png/228px-MK8D_Wii_Rainbow_Road_Course_Icon.png');
 
 INSERT INTO Users
-    (username, password, email, user_roles) VALUES ('Bonobo','$2a$10$kyIG9z20vQVpG/mp9KE69u2sN0ULXDB/qnSJptSZEUfwNq4dhs0r.','oldTreeByWater@hotmail.com','{0,1}');
-
+    (username, password, email, user_roles) VALUES ('User01','$2a$10$RYjOAsYyDHMVwYamdfRRXexM/EYKLcrg6bf305C26SNRLv1hkapB.','User@Mariokart.com','{0}'), --The actual password here is UserPassword
+                                                   ('Admin01','$2a$10$ppzdg7CPwj4lVMRbp0Z9keBzgKfQh8wgUW36uLuUGyDCEqQc.OPPK','Admin@Mariokart.com','{0,1}'); --The actual password here is AdminPassword
 INSERT INTO Profiles
-    (username) VALUES ('Bonobo');
+    (username) VALUES ('User01'),('Admin01');
 
 UPDATE profiles SET user_username = username
              WHERE username = username;

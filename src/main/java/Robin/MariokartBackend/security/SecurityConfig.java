@@ -51,13 +51,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             http
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers(HttpMethod.POST, "/auth").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/auth","/users").permitAll()
                             .requestMatchers(HttpMethod.GET, "/characters","/courses","/kartParts","/profiles","/records","/users").permitAll()
                             .requestMatchers(HttpMethod.GET, "/characters/{id}","/courses/{id}","/kartParts/{id}","/profiles/{id}","/records/{id}").permitAll()
                             .requestMatchers(HttpMethod.GET, "/records/{id}/recording").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/records/").authenticated()
                             .requestMatchers(HttpMethod.GET, "/users/{id}").authenticated()
-                            .requestMatchers(HttpMethod.POST, "/records/").authenticated()
+                            .requestMatchers(HttpMethod.POST, "/records").authenticated()
                             .requestMatchers(HttpMethod.GET, "/records/rivals_only").authenticated()
                             .requestMatchers(HttpMethod.PUT, "/users/{id}","/profiles/{id}","/records/{id}").authenticated()
                             .requestMatchers(HttpMethod.DELETE, "/users/{id}","/profiles/{id}","/records/{id}").authenticated()
@@ -69,6 +68,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                             .requestMatchers(HttpMethod.POST,"/kartParts","/characters","/courses").hasAuthority("ADMIN")
                             .requestMatchers(HttpMethod.PUT,"/kartParts","/characters","/courses").hasAuthority("ADMIN")
                             .requestMatchers(HttpMethod.DELETE,"/kartParts","/characters","/courses").hasAuthority("ADMIN")
+                            .requestMatchers(HttpMethod.PUT,"/kartParts/{id}","/characters/{id}","/courses/{id}").hasAuthority("ADMIN")
+                            .requestMatchers(HttpMethod.DELETE,"/kartParts/{id}","/characters/{id}","/courses/{id}").hasAuthority("ADMIN")
                             .anyRequest().denyAll()
                     )
                     .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

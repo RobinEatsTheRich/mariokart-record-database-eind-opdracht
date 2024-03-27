@@ -341,10 +341,12 @@ public class recordServiceTest {
     void testDeleteRecordAllowed(){
         //Arrange
         MyUserDetails myUserDetails = new MyUserDetails(bonobo);
+        ArrayList<Record> courseRecordList = new ArrayList<>();
+        courseRecordList.add(bonobosRecord);
+        rainbowRoad.setRecords(courseRecordList);
         Mockito
                 .when(recordRepos.findById(1l))
                 .thenReturn(Optional.ofNullable(bonobosRecord));
-
         //Act
         recordService.deleteRecord(myUserDetails,1l);
 

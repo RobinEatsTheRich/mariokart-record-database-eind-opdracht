@@ -2,6 +2,7 @@ package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.CourseDto;
 import Robin.MariokartBackend.dtos.CourseDtoForRecord;
+import Robin.MariokartBackend.exceptions.BadRequestException;
 import Robin.MariokartBackend.inputDtos.CourseInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Course;
@@ -45,6 +46,9 @@ public class CourseService {
     }
 
     public CourseDto addCourse(CourseInputDto dto){
+        if (courseRepos.findById(dto.getId()).isPresent()){
+            throw new BadRequestException("A course by this ID already exists, please either edit that course using the 'PUT' method, or pick a different ID");
+        }
         Course Course = courseFromDto(dto);
         courseRepos.save(Course);
         return dtoFromCourse(Course);

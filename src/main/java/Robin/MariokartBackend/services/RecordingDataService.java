@@ -33,7 +33,7 @@ public class RecordingDataService {
         Record record = recordService.recordFromId(recordId);
         if (record.getProfile() == null){
             throw new ForbiddenException("This Record is not assigned to a profile yet, so you cannot be the owner.");
-        } else if (record.getProfile().getUsername() != myUserDetails.getUsername() &&
+        } else if (!record.getProfile().getUsername().equals(myUserDetails.getUsername()) &&
                 !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
             throw new ForbiddenException("You are not the owner of this record, nor logged in as an admin.");
         } else if (multipartFile == null || multipartFile.isEmpty()){
@@ -56,7 +56,7 @@ public class RecordingDataService {
 
     public void deleteRecording(MyUserDetails myUserDetails, Long recordId){
         Record record = recordService.recordFromId(recordId);
-        if (record.getProfile().getUsername() != myUserDetails.getUsername() &&
+        if (!record.getProfile().getUsername().equals(myUserDetails.getUsername()) &&
                 !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
             throw new ForbiddenException("You are not the owner of this record, nor logged in as an admin.");
         }

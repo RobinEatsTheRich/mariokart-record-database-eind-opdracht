@@ -91,6 +91,9 @@ public class RecordService {
                 !myUserDetails.getUserRoles().contains(UserRole.ADMIN)){
             throw new ForbiddenException("You are logged in as "+myUserDetails.getUsername()+", not as "+recordOwner+".");
         }
+        List<Record> courseRecordList = record.getCourse().getRecords();
+        courseRecordList.remove(record);
+        record.getCourse().setRecords(courseRecordList);
         recordRepos.deleteById(id);
     }
 

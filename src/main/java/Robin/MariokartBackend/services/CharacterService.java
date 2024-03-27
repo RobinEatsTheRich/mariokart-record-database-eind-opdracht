@@ -1,6 +1,7 @@
 package Robin.MariokartBackend.services;
 
 import Robin.MariokartBackend.dtos.CharacterDto;
+import Robin.MariokartBackend.exceptions.BadRequestException;
 import Robin.MariokartBackend.inputDtos.CharacterInputDto;
 import Robin.MariokartBackend.exceptions.RecordNotFoundException;
 import Robin.MariokartBackend.model.Character;
@@ -38,14 +39,18 @@ public class CharacterService {
     }
 
     public CharacterDto addCharacter(CharacterInputDto dto){
+        if (characterRepos.findById(dto.getId()).isPresent()){
+            throw new BadRequestException("A character by this ID already exists, please either edit that character using the 'PUT' method, or pick a different ID");
+        }
         Character character = characterFromDto(dto);
         characterRepos.save(character);
         return dtoFromCharacter(character);
     }
 
     public CharacterDto editCharacter(Long id, CharacterInputDto dto){
+        Character oldCharacter = characterFromId(id);   //This is to efficiently check whether the ID exists
         Character newCharacter = characterFromDto(dto);
-        newCharacter.setId(id);
+        newCharacter.setId(oldCharacter.getId());
         characterRepos.save(newCharacter);
         return dtoFromCharacter(newCharacter);
     }

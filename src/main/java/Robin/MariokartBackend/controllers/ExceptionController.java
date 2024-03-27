@@ -20,7 +20,7 @@ public class ExceptionController {
     @ExceptionHandler(value = ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<Object> forbiddenException(ForbiddenException exception){
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(value = BadRequestException.class)

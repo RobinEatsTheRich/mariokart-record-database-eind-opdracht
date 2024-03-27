@@ -40,6 +40,9 @@ public class KartPartService {
     }
 
     public KartPartDto addKartPart(KartPartInputDto dto){
+        if (kartPartRepos.findById(dto.getId()).isPresent()){
+            throw new BadRequestException("A kartPart by this ID already exists, please either edit that part using the 'PUT' method, or pick a different ID");
+        }
         KartPart kartPart = kartPartFromDto(dto);
         kartPartRepos.save(kartPart);
         return dtoFromKartPart(kartPart);

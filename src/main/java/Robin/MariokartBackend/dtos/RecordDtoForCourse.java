@@ -17,7 +17,6 @@ public class RecordDtoForCourse {
     private String lap7;
     private boolean is200CC;
     private CharacterDto character;
-    private CourseDto course;
     private KartPartDto body;
     private KartPartDto wheels;
     private KartPartDto glider;
