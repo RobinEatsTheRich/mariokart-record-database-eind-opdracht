@@ -120,6 +120,8 @@ public class ProfileService {
         profileRepos.save(them);
         return dtoFromProfile(me);
     }
+    //Favouriete character & kart combinatie is niet unieke data in de database, maar een patroon van bestaande data.
+    //Daarom bestaat deze data niet in het profile model, maar wel in de DTO.
     public CharacterDto getFavoriteCharacter(List<RecordDto> recordList){
         List<Long> allCharacterId = new ArrayList<Long>();
         for (RecordDto recordDto : recordList){
